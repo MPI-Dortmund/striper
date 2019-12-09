@@ -9,6 +9,11 @@ class Test_javaClass_in_pythonDict(unittest.TestCase):
         self.assertEqual(sliceRange["slice_from"],0)
         self.assertEqual(sliceRange["slice_to"], 5)
 
+    def test_createDetectionThresholdRange(self):
+        DetectionThresholdRange=helper.createDetectionThresholdRange(lower_threshold=0.2,upper_threshold=0.5)
+        self.assertEqual(DetectionThresholdRange["lower_threshold"],0.2)
+        self.assertEqual(DetectionThresholdRange["upper_threshold"], 0.5)
+
     def test_createFilamentEnhancerContext(self):
         FilamentEnhancerContext=helper.createFilamentEnhancerContext(	filament_width=0, mask_width=5,angle_step=3,equalize = True)
         self.assertEqual(FilamentEnhancerContext["filament_width"],0)
