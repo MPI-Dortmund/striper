@@ -36,16 +36,6 @@ def createFilamentEnhancerContext(	filament_width, mask_width,angle_step,equaliz
 
     return {"filament_width": int(filament_width), "mask_width": int(mask_width), "angle_step": int(angle_step), "equalize": equalize}
 
-def createDetectionThresholdRange(lower_threshold,upper_threshold):
-    """
-    It is used to create a dict instead of the helicalPicker->FilamentDetector->DetectionThresholdRange.java class
-    :param lower_threshold:
-    :param upper_threshold:
-    :return:
-    """
-    return {"lower_threshold": lower_threshold, "upper_threshold": upper_threshold}
-
-
 
 def invert(img,m=JAVA_MIN_FLOAT32,M=JAVA_MAX_FLOAT32):
     """
