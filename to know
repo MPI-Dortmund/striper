@@ -1,5 +1,14 @@
-List of changes between java and python
+List of java-py equivalent vars
+-) FloatProcessor (32-bit floating-point) --> numpy array of float (https://docs.scipy.org/doc/numpy/user/basics.types.html)
 
+
+LIST OF CHANGES BETWEEN JAVA AND PYTHON CODE
 1) from java class to python dict
     -) helicalPicker->gui->SliceRange.java -----> helper.createSliceRange(slice_from,slice_to)
     -) FilamentEnhancer->FilamentEnhancerContext.java -----> helper.createFilamentEnhancerContext(filament_width, mask_width,angle_step,equalize
+
+2) FilamentEnhancer->MaskCreator_.java now it is a function that returns the mask helper.createMask(int mask_size, int filamentwidth, int maskwidth, int type)
+
+
+TO TEST:
+HELPER.invert()
