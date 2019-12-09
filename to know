@@ -1,0 +1,3 @@
+List of changes between java and python
+
+1) helicalPicker->gui->SliceRange.java class becomes dict: key(slice_from,slice_to) created by the function helper.createSliceRange(slice_from,slice_to)
