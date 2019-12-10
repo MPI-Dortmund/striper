@@ -57,7 +57,8 @@ setup(
         "pillow==6.2.1",
         "mrcfile==1.1.2",
         "pytest==5.3.1",
-        "scipy==1.4.0rc2"
+        "scipy==1.4.0rc2",
+        "imageio==2.6.1"
     ],
     description='STRIPPER: faST Robust fIlament Picking ProcEduRe',
 )
