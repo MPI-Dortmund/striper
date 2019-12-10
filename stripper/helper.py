@@ -168,3 +168,43 @@ def getTransformedMasks( mask_size, filament_width, mask_width, angle_step,t):
 
     return fftOfFilters
 """
+
+
+def param_json_for_ridge_detection(sigma,lower_th,upper_th,max_l_len,min_l_len,darkLine =False, doCorrecPosition=True, doEstimateWidth=True, doExtendLine=True, overlap=False):
+    dl = "LIGHT" if darkLine is False else "DARK"
+    ov = "SLOPE" if overlap is True else "NONE"
+
+    data=dict()
+    data["path_to_file"] =""
+    data["mandatory_parameters"] =[]
+    data["mandatory_parameters"].append(
+        {
+            "Sigma": sigma,
+            "Lower_Threshold": lower_th,
+            "Upper_Threshold": upper_th,
+            "Maximum_Line_Length": max_l_len,
+            "Minimum_Line_Length": min_l_len,
+            "Darkline": dl,
+            "Overlap_resolution": ov
+    })
+    data["optional_parameters"] =[]
+    data["optional_parameters"].append(
+    {
+            "Line_width":0,
+            "High_contrast": 0,
+            "Low_contrast": 0
+    })
+    data["further_options"] =[]
+    data["further_options"].append(
+    {
+            "Correct_position": doCorrecPosition,
+            "Estimate_width": doEstimateWidth,
+            "doExtendLine": doExtendLine,
+            "Show_junction_points":False,
+            "Show_IDs": False,
+            "Display_results":False,
+            "Preview":False,
+            "Make_Binary": False,
+            "save_on_disk": False
+    })
+    return data

@@ -51,6 +51,7 @@ setup(
     name='stripper',
     version=find_version("stripper", "__init__.py"),
     python_requires='>3.7.0',
+    packages=['stripper'],
     license='MIT',
     install_requires=[
         "numpy==1.18.0rc1",
