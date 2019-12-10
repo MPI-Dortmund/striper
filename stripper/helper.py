@@ -1,7 +1,7 @@
 """
 JAVA CLASS THAT I CONVERTED IN PYTHON DICTIONARY
 """
-from numpy import zeros,subtract,add,repeat,arange,tile,reshape,multiply,divide,exp
+from numpy import zeros,add,repeat,arange,tile,reshape,multiply,divide,exp
 
 from math import pi
 
@@ -12,6 +12,8 @@ JAVA_MAX_FLOAT32=3.4028234663852886E38
 JAVA_MIN_FLOAT32=1.1754943508222875E-38
 JAVA_MAX_DOUBLE= 1.7976931348623157E308
 JAVA_MIN_DOUBLE= 2.2250738585072014E-308
+INTEGER_8BIT_MAX = 255
+INTEGER_8BIT_MIN = 0
 
 def createSliceRange(slice_from,slice_to):
     """
@@ -40,7 +42,7 @@ def createFilamentEnhancerContext(	filament_width, mask_width,angle_step,equaliz
     return {"filament_width": int(filament_width), "mask_width": int(mask_width), "angle_step": int(angle_step), "equalize": equalize}
 
 
-def invert(img,m=JAVA_MIN_FLOAT32,M=JAVA_MAX_FLOAT32):
+def invert(img,m=INTEGER_8BIT_MIN,M=INTEGER_8BIT_MAX):
     """
     This function simulate the FloatProcessor.invert function. For more info see:
                         ij.process.FloatProcesor.invert() ln(493)
