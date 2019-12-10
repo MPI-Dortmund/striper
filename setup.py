@@ -56,7 +56,8 @@ setup(
         "numpy==1.18.0rc1",
         "pillow==6.2.1",
         "mrcfile==1.1.2",
-        "pytest==5.3.1"
+        "pytest==5.3.1",
+        "scipy==1.4.0rc2"
     ],
     description='STRIPPER: faST Robust fIlament Picking ProcEduRe',
 )

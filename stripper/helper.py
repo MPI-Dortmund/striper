@@ -1,19 +1,24 @@
 """
 JAVA CLASS THAT I CONVERTED IN PYTHON DICTIONARY
 """
-from numpy import zeros,add,repeat,arange,tile,reshape,multiply,divide,exp
-
+from numpy import zeros,add,repeat,arange,tile,reshape,multiply,divide,exp,fft
+from copy import deepcopy
 from math import pi
+from scipy import ndimage
 
 
-# in invert floatProcess img i have to use min and max of float or double?? see in the code
-# https://docs.oracle.com/javase/8/docs/api/constant-values.html#java.lang.Float.MAX_VALUE
+""" order of the spline interpolation in scipy.ndimage for BICUBIC interpolation """
+BICUBIC=3       #https://stackoverflow.com/questions/13242382/resampling-a-numpy-array-representing-an-image
+
+
+""" to be compatible with java inplementation I listed the min and max value for the 'invert' """
 JAVA_MAX_FLOAT32=3.4028234663852886E38
 JAVA_MIN_FLOAT32=1.1754943508222875E-38
 JAVA_MAX_DOUBLE= 1.7976931348623157E308
 JAVA_MIN_DOUBLE= 2.2250738585072014E-308
 INTEGER_8BIT_MAX = 255
 INTEGER_8BIT_MIN = 0
+
 
 def createSliceRange(slice_from,slice_to):
     """
@@ -125,5 +130,32 @@ def generateMask(mask_size, filamentwidth, maskwidth, t):
     return mask
 
 
+def getTransformedMasks(mask_size, filament_width, mask_width, angle_step,t):
+    """
+    In java it was SYNCHRONIZED ... I'm not going to implement multithread but multiprocess. !!!
+    https://stackoverflow.com/questions/7848471/what-does-synchronized-mean-in-java
+    It replace the whole 'FilamentEnhancer->TransformedMaskProvider.java' class
 
+    :param mask_size:
+    :param filament_width:
+    :param mask_width:
+    :param angle_step:
+    :param t:
+    :return: a list of fft, images. Each image is a rotation of x degree of the calculated mask
+    """
+    if (mask_size & (mask_size - 1)) != 0:
+        print(f"ERROR: Mask size is not a power of 2. (maskSize={mask_size})")
+        exit(-1)
+
+    """
+        instead of using the trasform() of FHT.class we use the fft 2d
+        https://docs.scipy.org/doc/numpy/reference/generated/numpy.fft.fft2.html
+    """
+    fp = generateMask(mask_size, filament_width, mask_width, t)
+    fftOfFilters = [fft.fft2(fp)]
+
+    for i in range(1,int(180/angle_step)):
+        fftOfFilters.append(fft.fft2(ndimage.rotate(input=fp, angle=i*angle_step,order=BICUBIC)))
+
+    return fftOfFilters
 

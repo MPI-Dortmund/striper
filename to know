@@ -12,6 +12,8 @@ LIST OF CHANGES BETWEEN JAVA AND PYTHON CODE
 
 2) FilamentEnhancer->MaskCreator_.java now it is a function that returns the mask helper.createMask(int mask_size, int filamentwidth, int maskwidth, int type)
 
+3) helper.py --> getTransformedMasks
+   -)   In java it used FHT class that is an subclass of FloatProcessor. It used just for implement the fft 2d (transform()) and its inverse (inverseTransform())
+        For this reason we simulate it using "numpy.fft.fft2()" and "numpy.fft.ifft2()"
+   -)   For rotating in a bicubic way an image we used scipy.ndimage.rotate() with order=3
 
-TO TEST:
-HELPER.invert()

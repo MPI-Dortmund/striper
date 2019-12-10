@@ -1,7 +1,8 @@
 import stripper.helper as helper
 import unittest
 from numpy import array,array_equal,allclose,zeros
-
+import sys
+from io import StringIO
 
 class Test_javaClass_in_pythonDict(unittest.TestCase):
     def test_createSliceRange(self):
@@ -42,3 +43,16 @@ class Test_generateMask(unittest.TestCase):
         expected_array= array([[0.00000000e+00, -1.42357804e-04], [-8.20949204e-32 ,-1.89850628e-04]])
         out_array=helper.generateMask(mask_size=self.mask_size, filamentwidth=0.3, maskwidth=2, t=1)
         self.assertTrue(allclose(out_array, expected_array, atol=0.0000001))
+
+
+class Test_getTransformedMasks(unittest.TestCase):
+    mask_size=8
+
+    def test_error_case(self):
+        with self.assertRaises(SystemExit):
+            old_stdout = sys.stdout
+            print_out = StringIO()
+            sys.stdout = print_out
+            helper.getTransformedMasks(30, 1, 1, 4, 0)
+        sys.stdout = old_stdout
+        self.assertEqual("ERROR: Mask size is not a power of 2. (maskSize=30)\n",print_out.getvalue())
