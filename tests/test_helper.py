@@ -10,13 +10,6 @@ class Test_javaClass_in_pythonDict(unittest.TestCase):
         self.assertEqual(sliceRange["slice_from"],0)
         self.assertEqual(sliceRange["slice_to"], 5)
 
-    def test_createFilamentEnhancerContext(self):
-        FilamentEnhancerContext=helper.createFilamentEnhancerContext(	filament_width=0, mask_width=5,angle_step=3,equalize = True)
-        self.assertEqual(FilamentEnhancerContext["filament_width"],0)
-        self.assertEqual(FilamentEnhancerContext["mask_width"], 5)
-        self.assertEqual(FilamentEnhancerContext["angle_step"], 3)
-        self.assertTrue(FilamentEnhancerContext["equalize"])
-
 
 
 class Test_invert(unittest.TestCase):
@@ -45,6 +38,7 @@ class Test_generateMask(unittest.TestCase):
         self.assertTrue(allclose(out_array, expected_array, atol=0.0000001))
 
 
+#todo: implement the real example when you are sure that it works properly
 class Test_getTransformedMasks(unittest.TestCase):
     mask_size=8
 

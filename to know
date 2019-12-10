@@ -7,7 +7,7 @@ LIST OF CHANGES BETWEEN JAVA AND PYTHON CODE
     -) helicalPicker->gui->SliceRange.java -----> helper.createSliceRange(slice_from,slice_to)
     -) helicalPicker->FilamentDetector->DetectionThresholdRange.java -----> filamentDetector.DetectionThresholdRange(lower_threshold,upper_threshold)
     -) helicalPicker->FilamentDetector->FilamentDetectorContext.java class -----> filamentDetector.filamentDetectorContext(sigma,lower_threshold,upper_threshold)
-    -) FilamentEnhancer->FilamentEnhancerContext.java -----> helper.createFilamentEnhancerContext(filament_width, mask_width,angle_step,equalize)
+    -) FilamentEnhancer->FilamentEnhancerContext.java -----> filamentEnhancer.createFilamentEnhancerContext(filament_width, mask_width,angle_step,equalize)
     -) helicalPicker->FilamentDetector->DetectionThresholdRange.java -----> helper.DetectionThresholdRange(lower_threshold,upper_threshold)
 
 2) FilamentEnhancer->MaskCreator_.java now it is a function that returns the mask helper.createMask(int mask_size, int filamentwidth, int maskwidth, int type)
