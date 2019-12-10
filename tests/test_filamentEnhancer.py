@@ -10,3 +10,4 @@ class Test_javaClass_in_pythonDict(unittest.TestCase):
         self.assertEqual(FilamentEnhancerContext["mask_width"], 5)
         self.assertEqual(FilamentEnhancerContext["angle_step"], 3)
         self.assertTrue(FilamentEnhancerContext["equalize"])
+
