@@ -50,7 +50,7 @@ def invert(img,m=JAVA_MIN_FLOAT32,M=JAVA_MAX_FLOAT32):
     :param M: max value
     :return: inverted image as in java
     """
-    subtract(M, subtract(img, m), out=img)
+    img = M-(img-m)
     return img
 
 def generateMask(mask_size, filamentwidth, maskwidth, t):

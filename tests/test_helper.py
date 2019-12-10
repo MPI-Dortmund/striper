@@ -1,7 +1,7 @@
 import stripper.helper as helper
 import unittest
 from numpy import array,array_equal,allclose,zeros
-from copy import deepcopy
+
 
 class Test_javaClass_in_pythonDict(unittest.TestCase):
     def test_createSliceRange(self):
@@ -21,8 +21,9 @@ class Test_javaClass_in_pythonDict(unittest.TestCase):
 class Test_invert(unittest.TestCase):
     def test_invert(self):
         x = array([[1, 2.0], [0, 0], [2, 3.]])
-        expected_array = array([[-0.7 ,-1.7], [0.3, 0.3], [-1.7, -2.7]])
-        self.assertTrue(allclose(helper.invert(img=deepcopy(x),m=0.1,M=0.2),expected_array, atol=0.0000001))
+        expected_array = array([[1,2], [0, 0], [2, 3]])
+        helper.invert(img=x, m=0.1, M=0.2)
+        self.assertTrue(array_equal(x,expected_array))
 
 
 class Test_generateMask(unittest.TestCase):
