@@ -1,9 +1,10 @@
 """
 JAVA CLASS THAT I CONVERTED IN PYTHON DICTIONARY
 """
-from numpy import zeros,add,repeat,arange,tile,reshape,multiply,divide,exp,fft
+from numpy import zeros,add,repeat,arange,tile,reshape,multiply,divide,exp,fft,moveaxis
 from math import pi
 from scipy import ndimage
+import functools
 
 
 """ order of the spline interpolation in scipy.ndimage for BICUBIC interpolation """
@@ -112,8 +113,22 @@ def generateMask(mask_size, filamentwidth, maskwidth, t):
     return mask
 
 
-def getTransformedMasks(mask_size, filament_width, mask_width, angle_step,t):
+
+""" 
+I adapted the following 2 functions 
+ from https://github.com/MPI-Dortmund/LineEnhancer/blob/master/lineenhancer/image_reader.py
+ 
+ https://github.com/MPI-Dortmund/LineEnhancer/blob/master/lineenhancer/line_enhancer.py
+Thorsten.wagner committed on Sep 7, 2018              1 parent 7f54d3d commit d8adf43b63568598c6df34b0fa6e4e67e0083733 
+"""
+def rotate_and_fft(mask, angle):
+    return ndimage.interpolation.rotate(mask, angle, reshape=False, order=BICUBIC)
+
+
+def getTransformedMasks( mask_size, filament_width, mask_width, angle_step,t):
     """
+    calculate the fft for each rotation of the  mask return a list of complex arrays
+    I adapted the 'calculate_fourier_mask_stack_vectorized' from https://github.com/MPI-Dortmund/LineEnhancer/blob/master/lineenhancer/maskstackcreator.py
     In java it was SYNCHRONIZED ... I'm not going to implement multithread but multiprocess. !!!
     https://stackoverflow.com/questions/7848471/what-does-synchronized-mean-in-java
     It replace the whole 'FilamentEnhancer->TransformedMaskProvider.java' class
@@ -123,16 +138,28 @@ def getTransformedMasks(mask_size, filament_width, mask_width, angle_step,t):
     :param mask_width:
     :param angle_step:
     :param t:
-    :return: a list of fft, images. Each image is a rotation of x degree of the calculated mask
+    :return: fft for each rotation of the  mask return a list of complex arrays
     """
     if (mask_size & (mask_size - 1)) != 0:
         print(f"ERROR: Mask size is not a power of 2. (maskSize={mask_size})")
         exit(-1)
 
-    """
-        instead of using the trasform() of FHT.class we use the fft 2d
-        https://docs.scipy.org/doc/numpy/reference/generated/numpy.fft.fft2.html
-    """
+    mask = generateMask(mask_size, filament_width, mask_width, t)
+    angle_steps = range(0, 180, angle_step)
+    mask_stack = list(map(functools.partial(rotate_and_fft, mask), angle_steps))
+    result_fft = fft.rfft2(mask_stack,axes=(-2,-1))
+    result_fft = moveaxis(result_fft, 0, 2)
+    return result_fft
+
+
+
+"""
+My old code. I translated it directly from java
+def getTransformedMasks( mask_size, filament_width, mask_width, angle_step,t):
+    if (mask_size & (mask_size - 1)) != 0:
+        print(f"ERROR: Mask size is not a power of 2. (maskSize={mask_size})")
+        exit(-1)
+
     fp = generateMask(mask_size, filament_width, mask_width, t)
     fftOfFilters = [fft.fft2(fp)]
 
@@ -140,4 +167,4 @@ def getTransformedMasks(mask_size, filament_width, mask_width, angle_step,t):
         fftOfFilters.append(fft.fft2(ndimage.rotate(input=fp, angle=i*angle_step,order=BICUBIC)))
 
     return fftOfFilters
-
+"""
