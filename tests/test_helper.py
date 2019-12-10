@@ -25,20 +25,19 @@ class Test_invert(unittest.TestCase):
         self.assertTrue(allclose(helper.invert(img=deepcopy(x),m=0.1,M=0.2),expected_array, atol=0.0000001))
 
 
-#for now only test_invalid_type it is running
-class Test_createMask(unittest.TestCase):
+class Test_generateMask(unittest.TestCase):
     img= array([[1, 2.0], [0, 0]])
     mask_size=2
 
     def test_invalid_type(self):
-        self.assertTrue(array_equal(zeros((self.mask_size, self.mask_size), dtype=float),helper.createMask(mask_size=self.mask_size, filamentwidth=0.3, maskwidth=2, t=5)))
+        self.assertTrue(array_equal(zeros((self.mask_size, self.mask_size), dtype=float),helper.generateMask(mask_size=self.mask_size, filamentwidth=0.3, maskwidth=2, t=5)))
 
     def test_type0(self):
-        expected_array= array([[1, 2.0], [0, 0]])
-        out_array=helper.createMask(mask_size=self.mask_size, filamentwidth=0.3, maskwidth=2, t=0)
+        expected_array= array([[0, -5.23543306e+00], [1.31984404e-11 ,-1.04719755e+01]])
+        out_array=helper.generateMask(mask_size=self.mask_size, filamentwidth=0.3, maskwidth=2, t=0)
         self.assertTrue(allclose(out_array, expected_array, atol=0.0000001))
 
     def test_type1(self):
-        expected_array= array([[1, 2.0], [0, 0]])
-        out_array=helper.createMask(mask_size=self.mask_size, filamentwidth=0.3, maskwidth=2, t=1)
+        expected_array= array([[0.00000000e+00, -1.42357804e-04], [-8.20949204e-32 ,-1.89850628e-04]])
+        out_array=helper.generateMask(mask_size=self.mask_size, filamentwidth=0.3, maskwidth=2, t=1)
         self.assertTrue(allclose(out_array, expected_array, atol=0.0000001))
