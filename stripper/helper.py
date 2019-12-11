@@ -5,6 +5,7 @@ from numpy import zeros,add,repeat,arange,tile,reshape,multiply,divide,exp,fft,m
 from math import pi
 from scipy import ndimage
 import functools
+from ridge_detection.basicGeometry import Line
 
 
 """ order of the spline interpolation in scipy.ndimage for BICUBIC interpolation """
@@ -19,6 +20,31 @@ JAVA_MIN_DOUBLE= 2.2250738585072014E-308
 INTEGER_8BIT_MAX = 255
 INTEGER_8BIT_MIN = 0
 
+class Polygon:
+    """ row coordinates of the line/box points. """
+    row = list()
+    """ column coordinates of the line/box points. """
+    col = list()
+    """ number of points. """
+    num = 0
+    def __init__(self,col=None,row=None):
+        self.row = row
+        self.col = col
+        self.num = 0 if col is None else len(col)
+
+    def add_point(self,x,y):
+        self.row.append(y)
+        self.col.append(x)
+        self.num+=1
+
+
+
+def isValid_Line_obj(l,activate_error=False):
+    risp= not (isinstance(l, list) and isinstance(l[0], Line)) and not isinstance(l, Line)
+    if risp is False and activate_error is True:
+        print("ERROR: Invalid variables. It has to be a [list of] instance[s] of the class 'Line'.")
+        exit(-1)
+    return risp
 
 def createSliceRange(slice_from,slice_to):
     """
@@ -208,3 +234,9 @@ def param_json_for_ridge_detection(sigma,lower_th,upper_th,max_l_len,min_l_len,d
             "save_on_disk": False
     })
     return data
+
+def convert_ridge_detectionLine_toPolygon(line):
+    if not isinstance(line,list):
+        return Polygon(col=line.col,row=line.row) if isValid_Line_obj(line) is True else line
+    else:
+        return [Polygon(col=l.col,row=l.row) if isValid_Line_obj(l) is True else l for l in line]
