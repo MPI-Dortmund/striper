@@ -21,4 +21,6 @@ LIST OF CHANGES BETWEEN JAVA AND PYTHON CODE
 
 TODO:
     quando tutto funziona sostiutisce le maschere mask con mask numpy (T/F) e applica operazioni vettoriali, se img e' PIL convertila in numpy applica maschera e poi riconvertila.
-    Ovviamente se possibile
+    Siccome numpy e PIL hanno le dimensioni swappate, i cicli su col,row dei polygon probabilmente vanno invertiti
+    PIL (col,row)
+    numpy(row,col) cioe' axis[0]=row axis[1]=col

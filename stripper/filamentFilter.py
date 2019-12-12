@@ -1,7 +1,15 @@
 from PIL import Image
 from math import sqrt as math_sqrt
-from numpy import zeros,multiply,sqrt as np_sqrt, sum as np_sum
+from numpy import zeros,multiply,sqrt as np_sqrt, sum as np_sum,asarray
 from stripper.helper import convert_ridge_detectionLine_toPolygon,invert,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
+
+
+#todo: numpy array instead of PIL img. Should I swap the loop operation over col,row??
+"""
+more info hier https://stackoverflow.com/questions/384759/how-to-convert-a-pil-image-into-a-numpy-array
+needs noticing is that Pillow-style im is column-major while numpy-style im2arr is row-major. 
+    However, the function Image.fromarray already takes this into consideration. 
+"""
 
 """
 class Polygon seems to be used by thorsten just as a list of coordinate x,y.
@@ -94,7 +102,8 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
 
     for pos,l in enumerate(lines):
         line_image = Image.new(mode="I", size=input_images[0].shape, color=0)
-        drawLines(detected_lines=l, im=input_images[0].shape, fg=255)
+        line_image = asarray(line_image)
+        drawLines(detected_lines=l, im=line_image, fg=255)
         #todo: what about invert an skeleton
         #line_image=invert(line_image)
         #line_image.skeletonize();
@@ -363,10 +372,11 @@ def drawLines(detected_lines,im,fg=255):
     plot the lines, in detected_lines' on a new image of the given size.
     For default the bacground colour is black and the lines are white
     :param detected_lines: list of  object Line from 'ridge_detection.basicGeometry'
-    :param im: PIL image
+    :param im:
     :param fg: lines color
     :return:
     """
+    #todo: I created it to get as input a PIL image. In order to speed up the code now it gets a numpy array. Is it still ok? or so I have to swap 'line.col,line.row' ?
     """ plot the lines"""
     for line in convert_ridge_detectionLine_toPolygon(detected_lines):
         for i,j in zip(line.col,line.row):
