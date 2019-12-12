@@ -46,6 +46,8 @@ def isValid_Line_obj(l,activate_error=False):
         exit(-1)
     return risp
 
+
+
 def createSliceRange(slice_from,slice_to):
     """
     It is used to create a dict instead of the helicalPicker->gui->SliceRange.java class
@@ -56,18 +58,6 @@ def createSliceRange(slice_from,slice_to):
     return {"slice_from":int(slice_from),"slice_to":int(slice_to)}
 
 
-def invert(img,m=INTEGER_8BIT_MIN,M=INTEGER_8BIT_MAX):
-    """
-    This function simulate the FloatProcessor.invert function. For more info see:
-                        ij.process.FloatProcesor.invert() ln(493)
-    Each pixel in the image is inverted using p=max-(p-min), where 'min' and 'max' are the display range limits
-    :param img:
-    :param m: min value
-    :param M: max value
-    :return: inverted image as in java
-    """
-    img = M-(img-m)
-    return img
 
 def generateMask(mask_size, filamentwidth, maskwidth, t):
     """

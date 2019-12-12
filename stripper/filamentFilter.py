@@ -2,8 +2,10 @@ from PIL import Image
 from scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
 from numpy import arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
-from stripper.helper import convert_ridge_detectionLine_toPolygon,invert,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
+from stripper.helper import convert_ridge_detectionLine_toPolygon,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
 from stripper.lineTracer import countNeighbors,extractLines
+from skimage.morphology import skeletonize
+from skimage.util import invert
 
 
 #todo: numpy array instead of PIL img. Should I swap the loop operation over col,row??
@@ -106,10 +108,9 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
         line_image = Image.new(mode="I", size=input_images[0].shape, color=0)
         line_image = asarray(line_image)
         drawLines(detected_lines=l, im=line_image, fg=255)
-        #todo: what about invert an skeleton
-        #line_image=invert(line_image)
-        #line_image.skeletonize();
-		#line_image.invert();
+        line_image=invert(line_image)
+        line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
+        line_image = invert(line_image)
         maskImage = masks[pos] if isinstance(masks,list) else None
         filtered_lines+=filterLineImage(line_image=line_image,input_image=input_images[pos],response_image =response_maps[pos], filamenFilter_context=filamenFilter_context,mask = maskImage)
         #filtered_lines.put(slice_position, filteredLines); because it has an hashmap

@@ -11,15 +11,6 @@ class Test_javaClass_in_pythonDict(unittest.TestCase):
         self.assertEqual(sliceRange["slice_to"], 5)
 
 
-
-class Test_invert(unittest.TestCase):
-    def test_invert(self):
-        x = array([[1, 2.0], [0, 0], [2, 3.]])
-        expected_array = array([[1,2], [0, 0], [2, 3]])
-        helper.invert(img=x, m=0.1, M=0.2)
-        self.assertTrue(array_equal(x,expected_array))
-
-
 class Test_generateMask(unittest.TestCase):
     img= array([[1, 2.0], [0, 0]])
     mask_size=2
