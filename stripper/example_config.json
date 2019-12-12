@@ -1,30 +1,28 @@
 {
-    "path_to_file": "../example.tif",
-	"mandatory_parameters": {
-        "Sigma": 3.39,
-        "Lower_Threshold": 0.34,
+    "path_to_file": "../Actin-ADP-BeFx_0003_60e_DW.mrc",
+	"Detection": {
+        "Filament_width": 16,
+        "Lower_Threshold": 0.6,
         "Upper_Threshold": 1.02,
-        "Maximum_Line_Length": 0,
-        "Minimum_Line_Length": 0,
-        "Darkline": "LIGHT",
-        "Overlap_resolution": "NONE"
+        "Mask_width": 100,
+        "Equalize": true
     },
 
-  	"optional_parameters": {
-		"Line_width": 10.0,
-        "High_contrast": 200,
-        "Low_contrast": 80
+  	"Filtering": {
+		"Min_number_of_boxes": 0,
+        "Sigma_min_response": 0,
+        "Sigma_max_response": 0,
+        "Sensitivity": 0.999,
+        "Min_straightness": 30,
+        "Window_size": 30,
+        "Allowed_box_overlapping": 0.5,
+        "Custom_mask": false
 	},
 
-	"further_options": {
-		"Correct_position": true,
-		"Estimate_width": true,
-        "doExtendLine": true,
-		"Show_junction_points": true,
-        "Show_IDs": false,
-		"Display_results": true,
-        "Preview": true,
-        "Make_Binary": false,
-        "save_on_disk": true
+	"General": {
+		"Box_size": 64,
+		"Box_distance": 10,
+        "Convert_to_8bit": true,
+		"Resize": 1024
 	}
 }
