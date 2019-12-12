@@ -19,7 +19,7 @@ def createDetectionThresholdRange(lower_threshold,upper_threshold):
     """
     return {"lower_threshold": lower_threshold, "upper_threshold": upper_threshold}
 
-def filamentDetectorContext(sigma,lower_threshold,upper_threshold):
+def createFilamentDetectorContext(sigma, lower_threshold, upper_threshold):
     """
     It is used to create a dict instead of the helicalPicker->FilamentDetector->FilamentDetectorContext.java class
     :param sigma:
@@ -50,7 +50,7 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
 
     :param stack_imgs: list of images
     :param slice_range: dict. shold generate via helper.createSliceRange
-    :param filamentDetectContext:  dict. shold generate via filamentDetectorContext
+    :param filamentDetectContext:  dict. shold generate via createFilamentDetectorContext
     :return:
     """
 
@@ -58,7 +58,7 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
         print("ERROR> invalid slice_range variable. Use 'helper.createSliceRange(slice_from,slice_to)' to create it")
         exit(-1)
     if isinstance(filamentDetectContext,dict ) is False or "sigma" not in filamentDetectContext.keys() or "thresholdRange" not in filamentDetectContext.keys():
-        print("ERROR> invalid filamentDetectorContext variable. Use 'filamentDetectorContext(slice_from,slice_to)' to create it")
+        print("ERROR> invalid filamentDetectorContext variable. Use 'createFilamentDetectorContext(slice_from,slice_to)' to create it")
         exit(-1)
     lines=[]
     for i in range(slice_range["slice_from"],slice_range["slice_to"]+1):
