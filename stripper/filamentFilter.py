@@ -3,6 +3,7 @@ from scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
 from numpy import arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
 from stripper.helper import convert_ridge_detectionLine_toPolygon,invert,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
+from stripper.lineTracer import countNeighbors,extractLines
 
 
 #todo: numpy array instead of PIL img. Should I swap the loop operation over col,row??
@@ -312,30 +313,9 @@ def isJunction(x,y,line_image,connected=True):
     :param connected:
     :return:
     """
-    return countNeighbors(x=x,y=y,line_image=line_image,connected=connected) > 2
+    return countNeighbors(x=x, y=y, img=line_image, connected=connected) > 2
 
 
-
-def countNeighbors(x,y,line_image,connected=True):
-    """
-    :param x:
-    :param y:
-    :param line_image:
-    :param connected:
-    :return:
-    """
-    n=0
-    if line_image[x,y]>0:
-        if connected is True:
-            for i in [-1,0,1]:
-                for j in [-1, 0, 1]:
-                    if j==0 and i==0:
-                        continue
-                    if line_image[x+1,y+1]>0:
-                        n+=1
-        else:
-            n+= (line_image[x+1,y]>0) + (line_image[x-1,y]>0) + (line_image[x,y+1]>0) + (line_image[x,y-1]>0)
-    return n
 
 def removeParallelLines(line_image, lines, radius):
     """
@@ -345,7 +325,6 @@ def removeParallelLines(line_image, lines, radius):
     :param radius:
     :return:
     """
-    #todo: it depends filamentFilter->LineTracer.java
     lines =convert_ridge_detectionLine_toPolygon(lines)
     for l in lines:
         for r,c in zip(l.col, l.row):
@@ -356,10 +335,7 @@ def removeParallelLines(line_image, lines, radius):
                     if line_image[x,y]>0 and isOnLine(x=x,y=y,line=l) is False:
                         line_image[x,y]=0
                         line_image[r,c] = 0
-
-    filtered_lines = list()
-    # filtered_lines = tracer.extractLines(line_image) #tracer.extractLines((ByteProcessor) ip);
-    return filtered_lines
+    return extractLines(line_image)
 
 def isOnLine(x,y,line):
     """
@@ -401,15 +377,13 @@ def splitByStraightness(lines,line_image, min_straightness, window_length, radiu
     :return:
     """
     lines=convert_ridge_detectionLine_toPolygon(lines)
-    filtered=list()
     for l in lines:
         for i in range(l.num-window_length):
             s=getStraightness(l,i,i+window_length)
             if s<min_straightness:
                 index = int(i + window_length / 2 + 1)
                 setRegionToBlack(l.col[index],l.row[index],line_image,radius)
-    #ArrayList<Polygon> filtered = tracer.extractLines((ByteProcessor) line_image);
-    return filtered
+    return extractLines(line_image)
 
 
 def setRegionToBlack(x,y,img,radius):
