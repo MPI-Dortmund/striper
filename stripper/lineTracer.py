@@ -1,4 +1,5 @@
 from stripper.helper import Polygon
+from  numpy import zeros
 
 def extractLines(img):
     """
@@ -7,6 +8,20 @@ def extractLines(img):
     :return:
     """
     lines=list()
+    img_map=zeros(img.shape)
+    rangeX=range(img.shape[0])
+    rangeY = range(img.shape[1])
+    for x in rangeX:
+        for y in rangeY:
+            if isStartPoint(x=x,y=y,img=img,connected=True) and img_map[x,y] == 0:
+                img_map[x, y] =1
+                lines.append(traceLine(x=x,y=y,img=img,img_map=img_map))
+
+    for x in rangeX:
+        for y in rangeY:
+            if img[x,y] and img_map[x,y] == 0:
+                img_map[x, y] =1
+                lines.append(traceLine(x=x,y=y,img=img,img_map=img_map))
 
     return lines
 
