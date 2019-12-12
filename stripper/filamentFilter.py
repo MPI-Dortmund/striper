@@ -130,7 +130,7 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
     setBorderToZero(line_image=line_image,bordersize=filamenFilter_context["border_diameter"])
     removeJunctions(line_image=line_image, removement_radius=filamenFilter_context["removement_radius"])
     if mask is not  None:
-        applyMask(line_image=line_image, mask=mask)
+        line_image[mask==0]=0
 
     lines = list() #=tracer.extractLines((ByteProcessor) line_image);   it is a list of Polygon
     lines = splitByStraightness(lines=lines,line_image=line_image, min_straightness=filamenFilter_context["min_line_straightness"], window_length=filamenFilter_context["window_width_straightness"], radius=filamenFilter_context["removement_radius"])
@@ -152,20 +152,6 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
     drawLines(detected_lines=lines, im=line_image, fg=255)
     lines=removeParallelLines(line_image=line_image, lines=lines, radius=filamenFilter_context["min_filament_distance"])
     return filterByLength(lines=lines, minimum_number_boxes=filamenFilter_context["min_number_boxes"])
-
-
-
-def applyMask(line_image, mask):
-    """
-
-    :param line_image:
-    :param mask:
-    :return:
-    """
-    for x in mask.shape[0]:
-        for y in mask.shape[1]:
-            if mask[x,y] ==0:
-                line_image[x,y]=0
 
 
 
