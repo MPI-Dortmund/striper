@@ -423,7 +423,8 @@ def setRegionToBlack(x,y,img,radius):
     """
     for i in range(-radius,radius+1):
         for j in range(-radius,radius+1):
-            img[x+i,y+j]=0
+            if img.shape[0] > x + i > -1 and img.shape[1] > y + j > -1:
+                img[x + i, y + j] = 0
 
 
 
