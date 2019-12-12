@@ -1,6 +1,7 @@
 from PIL import Image
+from scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
-from numpy import zeros,multiply,sqrt as np_sqrt, sum as np_sum,asarray
+from numpy import arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
 from stripper.helper import convert_ridge_detectionLine_toPolygon,invert,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
 
 
@@ -195,9 +196,9 @@ def filterByResponseMeanStd(lines, response_map, sigmafactor_max, sigmafactor_mi
 
     ''' Fit a distribution to get better estimates for mean response and the standard deviation '''
     if fitDistr is True:
-        fitted=fitNormalDistributionToHist(hist=getResponseHistogram(lines=lines, response_map=response_map),initMean=mean_response,initSD=sd)
-        mean_response=fitted[2]
-        sd = fitted[3]
+        fitted=fitNormalDistributionToHist(hist=getResponseHistogram(lines=lines, response_map=response_map))
+        mean_response=fitted[0]
+        sd = fitted[1]
 
     ''' Calculate the thresholds '''
     th_power=pow(10,-6)
@@ -243,16 +244,23 @@ def getResponseHistogram(lines, response_map):
             hist[index] += 1
 
 
-def fitNormalDistributionToHist( hist, initMean, initSD):
+def fitNormalDistributionToHist( hist):
     """
+    https://riptutorial.com/it/scipy/example/31081/adatta-una-funzione-ai-dati-da-un-istogramma
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html
+    :param hist: it is a list
+    :return: [mean,sd] fitted curve
+    """
+    def gauss(x):
+        """
+        :param x: has to be a numpy array
+        :return:
+        """
+        return exp(-0.5 * x ** 2 / np_sqrt(2 * pi))
 
-    :param hist:
-    :param initMean:
-    :param initSD:
-    :return:
-    """
-    #todo: implement fitNormalDistributionToHist
-    return list()
+    y = asarray(hist)
+    fitResult, cov = curve_fit(gauss, xdata=arange(y.shape[0]),ydata=y)
+    return fitResult
 
 
 def meanResponse(l, response_map):
@@ -272,10 +280,10 @@ def setBorderToZero(line_image, bordersize):
     """
     :param line_image:
     :param bordersize:
-    :return:
     """
-    # todo: implement setBorderToZero
-    pass
+    mask=zeros(line_image.shape)
+    mask[bordersize:-bordersize, bordersize:-bordersize] = 1
+    multiply(line_image,mask,out=line_image)
 
 
 
