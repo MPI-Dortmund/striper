@@ -219,16 +219,16 @@ def filterByResponseMeanStd(lines, response_map, sigmafactor_max, sigmafactor_mi
     If the number if higher then a the number of positions times some factor (0-1) the filament will be excluded.
     '''
     for l in lines:
-        nOver=0
-        nUnder=0
-        for i in range(len(l.num)):
-            if response_map[l.col,l.row]>threshold_max:
-                nOver+=1
-            if response_map[l.col,l.row]<threshold_min:
-                nUnder+=1
+        nOver = 0
+        nUnder = 0
+        for x, y in zip(l.col, l.row):
+            if response_map[x, y] > threshold_max:
+                nOver += 1
+            if response_map[x, y] < threshold_min:
+                nUnder += 1
             numberOfPointsToBeExcluded = int(l.num * double_filament_insensitivity)
-            if nUnder<numberOfPointsToBeExcluded and nOver<numberOfPointsToBeExcluded:
-                filtered+=l
+            if nUnder < numberOfPointsToBeExcluded and nOver < numberOfPointsToBeExcluded:
+                filtered += l
     return filtered
 
 
@@ -243,10 +243,9 @@ def getResponseHistogram(lines, response_map):
     lines = convert_ridge_detectionLine_toPolygon(lines)
     hist = [ 0 for i in range(256)]
     for l in lines:
-        for i in range(len(l.num)):
-            index = response_map[l.col, l.row]
-            hist[index]+=1
-    return hist
+        for x, y in zip(l.col, l.row):
+            index = response_map[x, y]
+            hist[index] += 1
 
 
 def fitNormalDistributionToHist( hist, initMean, initSD):
