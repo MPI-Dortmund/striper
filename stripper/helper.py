@@ -1,11 +1,12 @@
 """
 JAVA CLASS THAT I CONVERTED IN PYTHON DICTIONARY
 """
-from numpy import zeros,add,repeat,arange,tile,reshape,multiply,divide,exp,fft,moveaxis
+from numpy import zeros,add,repeat,arange,tile,reshape,multiply,divide,exp,fft,moveaxis,array,amin,amax
 from math import pi
 from scipy import ndimage
 import functools
 from ridge_detection.basicGeometry import Line
+from PIL import Image
 
 
 """ order of the spline interpolation in scipy.ndimage for BICUBIC interpolation """
@@ -37,6 +38,29 @@ class Polygon:
         self.col.append(x)
         self.num+=1
 
+def resize_img(img, resize=(1024, 1024)):
+    """
+    Resize the given image into the given size
+    :param img: as numpy array
+    :param resize: resize size
+    :return: return the resized img as numpy array
+    """
+    im = Image.fromarray(img)
+    return array(im.resize(resize, resample=Image.BILINEAR))
+
+def normalizeImg(img,new_max=INTEGER_8BIT_MAX,new_min=INTEGER_8BIT_MIN):
+    """
+    Normalize the image. For default it is converted to an 8bit img
+    :param img:
+    :param new_max:
+    :param new_min:
+    :return:
+    """
+    new_img = zeros(img.shape)
+    m = amin(img)
+    divide(img - m, amax(img) - m, out=new_img)
+    multiply(new_img, new_max - new_min, out=new_img)
+    return new_img
 
 
 def isValid_Line_obj(l,activate_error=False):
