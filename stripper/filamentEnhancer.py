@@ -30,7 +30,7 @@ def enhance_images(input_images, maskcreator, num_cpus = -1):
     is_path_list = isinstance(input_images,list)
 
     if not is_path_list:
-        if input_images.shape[1] != maskcreator.get_mask_size() or input_images.shape[2] != maskcreator.get_mask_size():
+        if input_images.shape[1] != maskcreator.get_mask_size() or input_images.shape[0] != maskcreator.get_mask_size():
             sys.exit("Mask and image dimensions are different. Stop")
 
     fft_masks = maskcreator.get_mask_fft_stack()
