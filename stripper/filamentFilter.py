@@ -90,7 +90,7 @@ def isValid_FilamentFilterContext(ffc):
 
 def filterLines(lines,filamenFilter_context,input_images,response_maps):
     """
-    :param lines:  list of  object Line from 'ridge_detection.basicGeometry'       [HashMap<Integer, ArrayList<Polygon>>]
+    :param lines:  list of  object helper.polygon       [HashMap<Integer, ArrayList<Polygon>>]
     :param filamenFilter_context: dict with info about the filament filter. Should be crated via 'createFilamentFilterContext'
     :param input_images: list of images (the stack)     [ImageStack]
     :param response_maps:                               [ImageStack]
@@ -104,6 +104,7 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
     filtered_lines = list()
     masks = filamenFilter_context["mask"]
 
+    #todo: when I'll be able to debug I have to see into it. I canno understand how could work input_images[pos]
     for pos,l in enumerate(lines):
         line_image = Image.new(mode="I", size=input_images[0].shape, color=0)
         line_image = asarray(line_image)
