@@ -1,10 +1,16 @@
 from datetime import datetime
 from argparse import ArgumentParser
-from stripper.params import Params
-from PIL import Image
-from stripper.helper import normalizeImg,INTEGER_8BIT_MIN,INTEGER_8BIT_MAX,resize_img
 import mrcfile
-from numpy import asarray
+from multiprocessing import cpu_count
+
+from stripper.params import Params,Image
+from stripper.helper import normalizeImg,INTEGER_8BIT_MIN,INTEGER_8BIT_MAX,resize_img, createSliceRange
+from stripper.maskStackCreator import MaskStackCreator
+from stripper.filamentEnhancer import enhance_images
+from stripper.filamentFilter import filterLines,asarray
+from stripper.filamentDetector import filamentDetectorWorker
+
+# it is basically the run in the PipelineRunner.java
 def run():
     parser = ArgumentParser("stripper parser tool")
     parser.add_argument(dest="config_filename",type=str, nargs='?',help="name of the config_file to use. Default value is 'example_config.json'")
@@ -22,6 +28,40 @@ def run():
     if params.convert8bit is True:
         img=normalizeImg(img=img,new_max=INTEGER_8BIT_MAX,new_min=INTEGER_8BIT_MIN)
 
+    """ STEP 1: enhance images"""
+    maskcreator=MaskStackCreator(filament_width=params.enhancerContext['filament_width'],
+                                 mask_size=img.shape[0],
+                                 mask_width=params.enhancerContext['mask_width'],
+                                 angle_step=params.enhancerContext['angle_step'],
+                                 interpolation_order = 1,
+                                 bright_background=False)
+
+    #todo: ask thorsten
+    # I need a list of images... maybe I have to force the 'enhance_image' to return its 'result' var and of course change somthing in 'enhance_images' too
+    enhanced_imgs = enhance_images(input_images=img, maskcreator=maskcreator, num_cpus=cpu_count())
+
+    '''
+     If the params.slice_range for a single input image case will be init via createSliceRange(slice_from=1,slice_to=1)
+     I have to change it with  createSliceRange(slice_from=1,slice_to=params.slice_range["slice_from"]-params.slice_range["slice_from"]+1)
+     '''
+    enhanced_substack_slice_range = createSliceRange(slice_from=0,slice_to=params.slice_range["slice_from"]-params.slice_range["slice_from"])
+
+
+    """ STEP 2: detect filaments"""
+    lines_in_enhanced_substack = filamentDetectorWorker(stack_imgs=enhanced_imgs,
+                                                        slice_range=enhanced_substack_slice_range,
+                                                        filamentDetectContext=params.detectorContext)
+
+
+    """ STEP 3: filament filaments"""
+    input_imgs=[img] if isinstance(img,list) is False else img[params.slice_range["slice_from"]-params.slice_range["slice_from"]]
+    filtered_lines= filterLines(lines=lines_in_enhanced_substack,
+                                filamenFilter_context=params.filterContext,
+                                input_images=input_imgs,
+                                response_maps=enhanced_imgs)
+
+    """ Correct slice positions for originak stack if only a substack was processed """
+    #todo: is there somethings to do?
     print("END:", datetime.now())
 
 if __name__ == "__main__":
