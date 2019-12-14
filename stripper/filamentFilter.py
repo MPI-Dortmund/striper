@@ -443,31 +443,6 @@ def filterByLength(lines,minimum_number_boxes):
     :return: list of polygon obj (should i create them??)
     """
     lines = convert_ridge_detectionLine_toPolygon(lines)
-    filtered=list()
-    for l in lines:
-        if calcNumberOfBoxes(l)>=minimum_number_boxes:
-            filtered.append(l)
-    return filtered
+    return [l for l in lines if l.num>=minimum_number_boxes ]
 
 
-
-def calcNumberOfBoxes(l):
-    """
-
-    :param l:
-    :return:
-    """
-    # todo: implement calcNumberOfBoxes ... it depends from 'BoxPositionIterator.java'
-    l = convert_ridge_detectionLine_toPolygon(l)
-    """
-    BoxPositionIterator it = new BoxPositionIterator(p, context.getBoxSize(), context.getBoxDistance(), false);
-		int N = 0;
-		
-		while(it.hasNext()){
-			N++;
-			it.next();
-		}
-		
-		return N;
-    """
-    return 0
