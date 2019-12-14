@@ -17,7 +17,7 @@ LIST OF CHANGES BETWEEN JAVA AND PYTHON CODE
 3) The helicalPicker->filamnetFilter->FilamentFilter java class is just a bunch of functions use to calculated the filtered lines via  'filterLines' method
    hence I created a bunch of function and in the code I'll call filamentFilter.filterLines(....) that does the whole work
 
-
+4) try a way to replace boxplacer->BoxPositionIterator.java class with helper.polygon. is  used just in 'filamentFilter->calcNumberOfBoxes(p)'
 
 TODO:
     quando tutto funziona sostiutisce le maschere mask con mask numpy (T/F) e applica operazioni vettoriali, se img e' PIL convertila in numpy applica maschera e poi riconvertila.

@@ -436,13 +436,32 @@ def getStraightness(line, start,end):
 
 
 
-def filterByLength(lines,minimum_number_boxes):
+def filterByLength(lines,filamenFilter_context):
     """
     :param lines: list of  object Line from 'ridge_detection.basicGeometry'
-    :param minimum_number_boxes:
+    :param filamenFilter_context:
     :return: list of polygon obj (should i create them??)
     """
     lines = convert_ridge_detectionLine_toPolygon(lines)
-    return [l for l in lines if l.num>=minimum_number_boxes ]
+    filtered=list()
+    for l in lines:
+        if calcNumberOfBoxes(l,filamenFilter_context["box_size"],filamenFilter_context["box_distance"])>=filamenFilter_context["min_number_boxes"]:
+            filtered.append(l)
+    return filtered
 
 
+
+def calcNumberOfBoxes(l,boxSize,boxDistance):
+    """
+
+    :param l: helper.polygon obj
+    :param boxSize:
+    :param boxDistance:
+    :return: the number of boxes in the polygon
+    """
+    n = 0
+    index =0
+    while l.index<l.num:
+        n+=1
+        l.hasNext(index,yboxToBoxDistSq=boxSize,distToEndSq=boxDistance)
+    return n

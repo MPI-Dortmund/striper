@@ -28,6 +28,8 @@ def run():
     if params.convert8bit is True:
         img=normalizeImg(img=img,new_max=INTEGER_8BIT_MAX,new_min=INTEGER_8BIT_MIN)
 
+
+    """ START helicalPicker->gui->PipelineRunner.java --> run() """
     """ STEP 1: enhance images"""
     maskcreator=MaskStackCreator(filament_width=params.enhancerContext['filament_width'],
                                  mask_size=img.shape[0],
@@ -62,6 +64,13 @@ def run():
 
     """ Correct slice positions for originak stack if only a substack was processed """
     #todo: is there somethings to do?
+
+    """ END helicalPicker->gui->PipelineRunner.java --> run() """
+
+    """  START helicalPicker->gui->PreviewActionListener.java or ApplyActionListener.java  after runner.getFilteredLines() """
+
+
+    """ """
     print("END:", datetime.now())
 
 if __name__ == "__main__":

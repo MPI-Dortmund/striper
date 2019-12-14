@@ -24,6 +24,9 @@ class Polygon:
     col = list()
     """ number of points. """
     num = 0
+    """ used to count the number of boxes"""
+    index =0
+
     def __init__(self,col=None,row=None):
         self.row = row
         self.col = col
@@ -33,6 +36,16 @@ class Polygon:
         self.row.append(y)
         self.col.append(x)
         self.num+=1
+
+    def hasNext(self,boxToBoxDistSq,distToEndSq):
+        return self.nextPointPos(boxToBoxDistSq=boxToBoxDistSq,distToEndSq=distToEndSq)
+
+    def nextPointPos(self,boxToBoxDistSq,distToEndSq):
+        pass
+
+    def next(self):
+        pass
+
 
 class Roi:
     """
