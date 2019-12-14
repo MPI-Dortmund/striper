@@ -34,6 +34,62 @@ class Polygon:
         self.col.append(x)
         self.num+=1
 
+class Roi:
+    """
+    It is boxplacer-->LRoi.java that is basically the native ROI.java
+    """
+    line_id= None
+    serialVersionUID = -322247483958866642
+    def __init__(self,x,y,w,h,line_id):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.line_id = line_id
+
+class Lines_of_ROI:
+    """
+        it is a dict of boxplacer-->Line.java
+        List of list
+        1) index self.lines is the id of the lines
+        2) elements in the index-list are the Roi obj representing the line
+    """
+    serialVersionUID = -8716351003343014469
+
+
+    def __init__(self):
+        self.lines = list()
+
+    def add_ROI(self,roi):
+        """add the given roi to the correct line"""
+        if isinstance(roi,Roi) is False:
+            print("ERROR: invalid Roi obj.")
+            exit(-1)
+        if roi.line_id > len(self.lines):
+            self.lines.append([roi])
+        else:
+            self.lines[roi.line_id].append(roi)
+
+    def get_totLine(self):
+        """
+        :return: the number of lines
+        """
+        return len(self.lines)
+
+    def get_totRoi_inLine(self, index):
+        """
+        return the number of Roi obj representing the index line
+        :param index: index of the line of interest
+        :return:
+        """
+        if index>len(self.lines):
+            print(f"ERROR: out of range. Line in Lines_of_ROI not found: number of line is '{len(self.lines)}. index in {index}")
+            exit(-1)
+
+
+
+
+
 def resize_img(img, resize=(1024, 1024)):
     """
     Resize the given image into the given size
