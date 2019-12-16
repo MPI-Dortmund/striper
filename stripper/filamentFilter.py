@@ -1,5 +1,4 @@
-from PIL import Image
-from scipy.optimize import curve_fit
+qfrom scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
 from numpy import arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
 from stripper.helper import convert_ridge_detectionLine_toPolygon,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
@@ -96,7 +95,6 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
     :param response_maps:                               [ImageStack]
     :return:    list of filtered images                 [HashMap<Integer, ArrayList<Polygon>>]
     """
-    lines=convert_ridge_detectionLine_toPolygon(lines)
     if isValid_FilamentFilterContext(filamenFilter_context) is False:
         print("ERROR> invalid filamenFilter_context variable. Use 'createFilamentFilterContext(	min_number_boxes = 0,min_line_straightness = 0,window_width_straightness = 5,removement_radius = 0,fit_distribution = False,sigma_min_response = 0,sigma_max_response = 0,min_filament_distance = 0,border_diameter = 0,double_filament_insensitivity = 1,userFilters = None,box_size = 1,box_distance = 1,mask = None)' to create it")
         exit(-1)
@@ -106,9 +104,8 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
 
     #todo: when I'll be able to debug I have to see into it. I canno understand how could work input_images[pos]
     for pos,l in enumerate(lines):
-        line_image = Image.new(mode="I", size=input_images[0].shape, color=0)
-        line_image = asarray(line_image)
-        drawLines(detected_lines=l, im=line_image, fg=255)
+        line_image = zeros(input_images[0].shape,dtype=bool)
+        drawLines(detected_lines=l, im=line_image, fg=1)  #error
         line_image=invert(line_image)
         line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
         line_image = invert(line_image)
@@ -284,7 +281,7 @@ def setBorderToZero(line_image, bordersize):
     :param line_image:
     :param bordersize:
     """
-    mask=zeros(line_image.shape)
+    mask=zeros(line_image.shape,dtype=bool)
     mask[bordersize:-bordersize, bordersize:-bordersize] = 1
     multiply(line_image,mask,out=line_image)
 
@@ -364,7 +361,10 @@ def drawLines(detected_lines,im,fg=255):
     """
     #todo: I created it to get as input a PIL image. In order to speed up the code now it gets a numpy array. Is it still ok? or so I have to swap 'line.col,line.row' ?
     """ plot the lines"""
-    for line in convert_ridge_detectionLine_toPolygon(detected_lines):
+    if isinstance(detected_lines, list) is False:
+        detected_lines=[detected_lines]
+
+    for line in detected_lines:
         for i,j in zip(line.col,line.row):
             im[int(i),int(j)] = fg
 
