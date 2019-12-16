@@ -4,7 +4,7 @@ from numpy import arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,as
 from skimage.morphology import skeletonize
 from skimage.util import invert
 
-from stripper.helper import convert_ridge_detectionLine_toPolygon,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
+from stripper.helper import JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
 from stripper.lineTracer import countNeighbors,extractLines
 
 #todo: numpy array instead of PIL img. Should I swap the loop operation over col,row??
@@ -14,10 +14,6 @@ needs noticing is that Pillow-style im is column-major while numpy-style im2arr 
     However, the function Image.fromarray already takes this into consideration. 
 """
 
-"""
-class Polygon seems to be used by thorsten just as a list of coordinate x,y.
-Hence If i will need to translate Line obj from ridge detector I use helper.convert_ridge_detectionLine_toPolygon(Line)  
-"""
 
 def createFilamentFilterContext(	min_number_boxes = 0,
                                     min_line_straightness = 0,
@@ -142,7 +138,6 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
     if mask is not  None:
         line_image[mask==0]=0
 
-
     lines = splitByStraightness(lines=extractLines(line_image),line_image=line_image, min_straightness=filamenFilter_context["min_line_straightness"], window_length=filamenFilter_context["window_width_straightness"], radius=filamenFilter_context["removement_radius"])
 
     #todo: translate this part of the code
@@ -156,6 +151,7 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
 			}
 		}
     """
+
     lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context["min_number_boxes"])
     drawLines(detected_lines=lines,im=line_image,fg=1)
     lines=filterByResponseMeanStd(lines=lines, response_map=response_image, sigmafactor_max=filamenFilter_context["sigma_max_response"], sigmafactor_min=filamenFilter_context["sigma_min_response"],  double_filament_insensitivity=filamenFilter_context["double_filament_insensitivity"], fitDistr=filamenFilter_context["fit_distribution"])
@@ -168,7 +164,7 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
 def filterByResponseMeanStd(lines, response_map, sigmafactor_max, sigmafactor_min,  double_filament_insensitivity, fitDistr=False):
     """
 
-    :param lines:
+    :param lines: list of  object helper.polygon
     :param response_map:
     :param sigmafactor_max:
     :param sigmafactor_min:
@@ -177,7 +173,6 @@ def filterByResponseMeanStd(lines, response_map, sigmafactor_max, sigmafactor_mi
     :return:
     """
     filtered=list()     # it will be a list of polygon
-    lines = convert_ridge_detectionLine_toPolygon(lines)
     ''' Calculate mean response over all lines '''
     sum_mean_line_response = 0
     for l in lines:
@@ -232,11 +227,10 @@ def filterByResponseMeanStd(lines, response_map, sigmafactor_max, sigmafactor_mi
 def getResponseHistogram(lines, response_map):
     """
 
-    :param lines:
+    :param lines: list of  object helper.polygon
     :param response_map:
     :return: an histogram
     """
-    lines = convert_ridge_detectionLine_toPolygon(lines)
     hist = [ 0 for i in range(256)]
     for l in lines:
         for x, y in zip(l.col, l.row):
@@ -265,11 +259,10 @@ def fitNormalDistributionToHist( hist):
 
 def meanResponse(l, response_map):
     """
-    :param l:
+    :param l: object helper.polygon
     :param response_map:
     :return:
     """
-    l = convert_ridge_detectionLine_toPolygon(l)
     s=0
     for i, j in zip(l.col, l.row):
         s+=response_map[i, j]
@@ -320,11 +313,10 @@ def removeParallelLines(line_image, lines, radius):
     """
 
     :param line_image:                                                                    [ByteProcessor]
-    :param lines: list of  object Line from 'ridge_detection.basicGeometry'       [ArrayList<Polygon>]
+    :param lines: list of  object helper.polygon
     :param radius:
     :return:
     """
-    lines =convert_ridge_detectionLine_toPolygon(lines)
     for l in lines:
         for r,c in zip(l.col, l.row):
             for x in range(r-radius,r+radius):
@@ -341,10 +333,9 @@ def isOnLine(x,y,line):
     Check if the point (x,y) is on the line
     :param x:
     :param y:
-    :param line: object Line from 'ridge_detection.basicGeometry' or helper.Poligon
+    :param line: object helper.polygon
     :return:
     """
-    line=convert_ridge_detectionLine_toPolygon(line)
     for c,r in zip(line.col,line.row):
         if x==c and y==r:
             return True
@@ -405,13 +396,11 @@ def setRegionToBlack(x,y,img,radius):
 
 def getStraightness(line, start,end):
     """
-    :param line: object Line from 'ridge_detection.basicGeometry' or helper.Poligon
+    :param line: object helper.polygon
     :param start: index of the starting point
     :param end: index of the ending point
     :return:
     """
-    line=convert_ridge_detectionLine_toPolygon(line)
-
     xend = line.col[end][:-1]
     xstart = line.col[start][1:]
     yend = line.row[end][:-1]
@@ -437,11 +426,10 @@ def getStraightness(line, start,end):
 
 def filterByLength(lines,filamenFilter_context):
     """
-    :param lines: list of  object Line from 'ridge_detection.basicGeometry'
+    :param lines: list of  object helper.polygon
     :param filamenFilter_context:
     :return: list of polygon obj (should i create them??)
     """
-    lines = convert_ridge_detectionLine_toPolygon(lines)
     filtered=list()
     for l in lines:
         if calcNumberOfBoxes(l,filamenFilter_context["box_size"],filamenFilter_context["box_distance"])>=filamenFilter_context["min_number_boxes"]:

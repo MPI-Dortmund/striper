@@ -180,9 +180,3 @@ def param_json_for_ridge_detection(sigma,lower_th,upper_th,max_l_len,min_l_len,d
             "save_on_disk": False
     }
     return data
-
-def convert_ridge_detectionLine_toPolygon(line):
-    if not isinstance(line,list):
-        return Polygon(col=line.col,row=line.row) if isValid_Line_obj(line) is True else line
-    else:
-        return [Polygon(col=l.col,row=l.row) if isValid_Line_obj(l) is True else l for l in line]
