@@ -322,7 +322,7 @@ def isJunction(x,y,line_image,connected=True):
 def removeParallelLines(line_image, lines, radius):
     """
 
-    :param ip:                                                                    [ByteProcessor]
+    :param line_image:                                                                    [ByteProcessor]
     :param lines: list of  object Line from 'ridge_detection.basicGeometry'       [ArrayList<Polygon>]
     :param radius:
     :return:
@@ -335,8 +335,8 @@ def removeParallelLines(line_image, lines, radius):
                     if x<0 or y<0 or x>=line_image[0] or y>=line_image[1]:
                         continue
                     if line_image[x,y]>0 and isOnLine(x=x,y=y,line=l) is False:
-                        line_image[x,y]=0
-                        line_image[r,c] = 0
+                        line_image.putpixel((int(x), int(y)), 0)
+                        line_image.putpixel((int(r), int(c)), 0)
     return extractLines(line_image)
 
 def isOnLine(x,y,line):
@@ -366,7 +366,7 @@ def drawLines(detected_lines,im,fg=255):
     """ plot the lines"""
     for line in convert_ridge_detectionLine_toPolygon(detected_lines):
         for i,j in zip(line.col,line.row):
-            im[int(i), int(j)] = fg
+            im.putpixel((int(i), int(j)),fg)
 
 def splitByStraightness(lines,line_image, min_straightness, window_length, radius):
     """
@@ -400,7 +400,7 @@ def setRegionToBlack(x,y,img,radius):
     for i in range(-radius,radius+1):
         for j in range(-radius,radius+1):
             if img.shape[0] > x + i > -1 and img.shape[1] > y + j > -1:
-                img[x + i, y + j] = 0
+                img.putpixel((int(x + i), int(y + j)), 0)
 
 
 

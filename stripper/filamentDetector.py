@@ -46,7 +46,7 @@ def binaryImage(shape_img,detected_lines):
     """ plot the lines"""
     for line in detected_lines:
         for i,j in zip(line.col,line.row):
-            im[int(i), int(j)] = 0
+            im.putpixel((int(i), int(j)), 0)
     arr_im = array(im)
     arr_im = invert(arr_im)
     arr_im = skeletonize(arr_im)  # https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
