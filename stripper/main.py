@@ -60,6 +60,9 @@ def run():
 
     """ STEP 3: filament filaments"""
     input_imgs=[img] if isinstance(img,list) is False else img[params.slice_range["slice_from"]-params.slice_range["slice_from"]]
+    if isinstance(input_imgs,list) is False:
+        input_imgs=[input_imgs]
+
     filtered_lines= filterLines(lines=lines_in_enhanced_substack,
                                 filamenFilter_context=params.filterContext,
                                 input_images=input_imgs,
