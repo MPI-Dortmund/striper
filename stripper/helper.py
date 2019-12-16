@@ -154,9 +154,7 @@ def param_json_for_ridge_detection(sigma,lower_th,upper_th,max_l_len,min_l_len,d
 
     data=dict()
     data["path_to_file"] =""
-    data["mandatory_parameters"] =[]
-    data["mandatory_parameters"].append(
-        {
+    data["mandatory_parameters"] = {
             "Sigma": sigma,
             "Lower_Threshold": lower_th,
             "Upper_Threshold": upper_th,
@@ -164,17 +162,13 @@ def param_json_for_ridge_detection(sigma,lower_th,upper_th,max_l_len,min_l_len,d
             "Minimum_Line_Length": min_l_len,
             "Darkline": dl,
             "Overlap_resolution": ov
-    })
-    data["optional_parameters"] =[]
-    data["optional_parameters"].append(
-    {
+    }
+    data["optional_parameters"] =    {
             "Line_width":0,
             "High_contrast": 0,
             "Low_contrast": 0
-    })
-    data["further_options"] =[]
-    data["further_options"].append(
-    {
+    }
+    data["further_options"] =    {
             "Correct_position": doCorrecPosition,
             "Estimate_width": doEstimateWidth,
             "doExtendLine": doExtendLine,
@@ -184,7 +178,7 @@ def param_json_for_ridge_detection(sigma,lower_th,upper_th,max_l_len,min_l_len,d
             "Preview":False,
             "Make_Binary": False,
             "save_on_disk": False
-    })
+    }
     return data
 
 def convert_ridge_detectionLine_toPolygon(line):
