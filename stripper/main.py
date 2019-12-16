@@ -35,13 +35,16 @@ def run():
                                  mask_size=img.shape[0],
                                  mask_width=params.enhancerContext['mask_width'],
                                  angle_step=params.enhancerContext['angle_step'],
-                                 interpolation_order = 1,
+                                 interpolation_order = 3,
                                  bright_background=False)
 
-    #todo: ask thorsten
-    # I need a list of images... maybe I have to force the 'enhance_image' to return its 'result' var and of course change somthing in 'enhance_images' too
+    """ the input images has to be always a list"""
+    if isinstance(img,list) is False:
+        img=[img]
     enhanced_imgs = enhance_images(input_images=img, maskcreator=maskcreator, num_cpus=cpu_count())
 
+    """ for the stripper I need the 'max_value' images"""
+    enhanced_imgs=[img["max_value"] for img in enhanced_imgs]
     '''
      If the params.slice_range for a single input image case will be init via createSliceRange(slice_from=1,slice_to=1)
      I have to change it with  createSliceRange(slice_from=1,slice_to=params.slice_range["slice_from"]-params.slice_range["slice_from"]+1)
