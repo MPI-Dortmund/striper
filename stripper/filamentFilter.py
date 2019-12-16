@@ -1,11 +1,11 @@
 from scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
 from numpy import arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
-from stripper.helper import convert_ridge_detectionLine_toPolygon,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
-from stripper.lineTracer import countNeighbors,extractLines
 from skimage.morphology import skeletonize
 from skimage.util import invert
 
+from stripper.helper import convert_ridge_detectionLine_toPolygon,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
+from stripper.lineTracer import countNeighbors,extractLines
 
 #todo: numpy array instead of PIL img. Should I swap the loop operation over col,row??
 """
@@ -142,8 +142,8 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
     if mask is not  None:
         line_image[mask==0]=0
 
-    lines = list() #=tracer.extractLines((ByteProcessor) line_image);   it is a list of Polygon
-    lines = splitByStraightness(lines=lines,line_image=line_image, min_straightness=filamenFilter_context["min_line_straightness"], window_length=filamenFilter_context["window_width_straightness"], radius=filamenFilter_context["removement_radius"])
+
+    lines = splitByStraightness(lines=extractLines(line_image),line_image=line_image, min_straightness=filamenFilter_context["min_line_straightness"], window_length=filamenFilter_context["window_width_straightness"], radius=filamenFilter_context["removement_radius"])
 
     #todo: translate this part of the code
     """
@@ -156,12 +156,12 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
 			}
 		}
     """
-    lines=filterByLength(lines=lines, minimum_number_boxes=filamenFilter_context["min_number_boxes"])
-    drawLines(detected_lines=lines,im=line_image,fg=255)
+    lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context["min_number_boxes"])
+    drawLines(detected_lines=lines,im=line_image,fg=1)
     lines=filterByResponseMeanStd(lines=lines, response_map=response_image, sigmafactor_max=filamenFilter_context["sigma_max_response"], sigmafactor_min=filamenFilter_context["sigma_min_response"],  double_filament_insensitivity=filamenFilter_context["double_filament_insensitivity"], fitDistr=filamenFilter_context["fit_distribution"])
-    drawLines(detected_lines=lines, im=line_image, fg=255)
+    drawLines(detected_lines=lines, im=line_image, fg=1)
     lines=removeParallelLines(line_image=line_image, lines=lines, radius=filamenFilter_context["min_filament_distance"])
-    return filterByLength(lines=lines, minimum_number_boxes=filamenFilter_context["min_number_boxes"])
+    return filterByLength(lines=lines, filamenFilter_context=filamenFilter_context["min_number_boxes"])
 
 
 
@@ -371,14 +371,13 @@ def drawLines(detected_lines,im,fg=255):
 def splitByStraightness(lines,line_image, min_straightness, window_length, radius):
     """
 
-    :param lines: list of  object Line from 'ridge_detection.basicGeometry'
+    :param lines: list of  object helper.polygon
     :param line_image:                                  [ByteProcessor]
     :param min_straightness:
     :param window_length:
     :param radius:
     :return:
     """
-    lines=convert_ridge_detectionLine_toPolygon(lines)
     for l in lines:
         for i in range(l.num-window_length):
             s=getStraightness(l,i,i+window_length)
