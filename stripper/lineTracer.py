@@ -60,7 +60,7 @@ def getNext(x, y, img, img_map):
         for j in [-1, 0, 1]:
             if (j==0 and i== 0) or isInside(x=x+1,y=y+1,img=img):
                 continue
-            if img[x+i,y+j]>0 and img_map[x+i,y+j]==0:
+            if  x+i<img.shape[0] and y+j<img.shape[0] and img[x+i,y+j]>0 and x+i<img_map.shape[0] and y+j<img_map.shape[0]  and img_map[x+i,y+j]==0:
                 return [x+i,y+j]
     return None
 
@@ -74,8 +74,8 @@ def countNeighbors(x, y, img, connected=True):
     :return:
     """
     n=0
-    if img[x, y]>0:
-        if connected is True:
+    if img[x, y] >0 and x+1<img.shape[0] and y+1<img.shape[1]:
+        if connected is True :
             for i in [-1,0,1]:
                 for j in [-1, 0, 1]:
                     if j==0 and i==0:

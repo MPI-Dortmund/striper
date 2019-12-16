@@ -366,7 +366,7 @@ def drawLines(detected_lines,im,fg=255):
     """ plot the lines"""
     for line in convert_ridge_detectionLine_toPolygon(detected_lines):
         for i,j in zip(line.col,line.row):
-            im.putpixel((int(i), int(j)),fg)
+            im[int(i),int(j)] = fg
 
 def splitByStraightness(lines,line_image, min_straightness, window_length, radius):
     """
