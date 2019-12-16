@@ -1,4 +1,4 @@
-qfrom scipy.optimize import curve_fit
+from scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
 from numpy import arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
 from stripper.helper import convert_ridge_detectionLine_toPolygon,JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
