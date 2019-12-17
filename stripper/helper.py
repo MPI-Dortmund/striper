@@ -113,7 +113,7 @@ def resize_img(img, resize=(1024, 1024)):
     im = Image.fromarray(img)
     return array(im.resize(resize, resample=Image.BILINEAR))
 
-def normalizeImg(img,new_max=INTEGER_8BIT_MAX,new_min=INTEGER_8BIT_MIN):
+def normalizeImg(img,new_min=INTEGER_8BIT_MIN,new_max=INTEGER_8BIT_MAX):
     """
     Normalize the image. For default it is converted to an 8bit img
     :param img:
@@ -125,7 +125,7 @@ def normalizeImg(img,new_max=INTEGER_8BIT_MAX,new_min=INTEGER_8BIT_MIN):
     m = amin(img)
     divide(img - m, amax(img) - m, out=new_img)
     multiply(new_img, new_max - new_min, out=new_img)
-    return new_img
+    return new_img+new_min
 
 
 def isValid_Line_obj(l,activate_error=False):
