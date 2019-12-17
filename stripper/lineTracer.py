@@ -58,9 +58,9 @@ def getNext(x, y, img, img_map):
     """
     for i in [-1,0,1]:
         for j in [-1, 0, 1]:
-            if (j==0 and i== 0) or isInside(x=x+1,y=y+1,img=img):
+            if (j==0 and i== 0) or isInside(x=x+1,y=y+1,img=img) is False:
                 continue
-            if  x+i<img.shape[0] and y+j<img.shape[0] and img[x+i,y+j]>0 and x+i<img_map.shape[0] and y+j<img_map.shape[0]  and img_map[x+i,y+j]==0:
+            if  0<=x+i<img.shape[0] and 0<=y+j<img.shape[0] and img[x+i,y+j]>0 and 0<=x+i<img_map.shape[0] and 0<=y+j<img_map.shape[0]  and img_map[x+i,y+j]==0:
                 return [x+i,y+j]
     return None
 
