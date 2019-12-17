@@ -77,8 +77,8 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
                                        max_l_len=0, min_l_len=0,
                                        darkLine=False, doCorrecPosition=True, doEstimateWidth=False, doExtendLine=True,
                                        overlap=False)
-
-    for input_image in stack_imgs[slice_range["slice_from"]:slice_range["slice_to"]+1]:
+    stack_range = stack_imgs[0] if isinstance(stack_imgs,list) is False else stack_imgs[slice_range["slice_from"]:slice_range["slice_to"]+1]
+    for input_image in stack_range:
         ld = lineDetector.LineDetector(params=p)
         detected_lines=ld.get_lines(in_img=input_image)
         binary_img = binaryImage(shape_img=input_image.shape,detected_lines=detected_lines)

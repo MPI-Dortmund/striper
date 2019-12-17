@@ -152,12 +152,12 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
 		}
     """
 
-    lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context["min_number_boxes"])
+    lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
     drawLines(detected_lines=lines,im=line_image,fg=1)
     lines=filterByResponseMeanStd(lines=lines, response_map=response_image, sigmafactor_max=filamenFilter_context["sigma_max_response"], sigmafactor_min=filamenFilter_context["sigma_min_response"],  double_filament_insensitivity=filamenFilter_context["double_filament_insensitivity"], fitDistr=filamenFilter_context["fit_distribution"])
     drawLines(detected_lines=lines, im=line_image, fg=1)
     lines=removeParallelLines(line_image=line_image, lines=lines, radius=filamenFilter_context["min_filament_distance"])
-    return filterByLength(lines=lines, filamenFilter_context=filamenFilter_context["min_number_boxes"])
+    return filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
 
 
 
