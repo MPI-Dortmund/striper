@@ -1,8 +1,7 @@
 from math import sqrt
 from stripper.helper import param_json_for_ridge_detection
 from ridge_detection import lineDetector
-from PIL import Image
-from numpy import array,ones
+from numpy import zeros
 from skimage.morphology import skeletonize
 from skimage.util import invert
 from stripper.lineTracer import extractLines
@@ -42,11 +41,11 @@ def binaryImage(shape_img,detected_lines):
     :param detected_lines:
     :return: numpy array
     """
-    arr_im=ones(shape_img)
+    arr_im=zeros(shape_img)
     """ plot the lines"""
     for line in detected_lines:
         for i,j in zip(line.col,line.row):
-            arr_im[int(i),int(j)]=0
+            arr_im[int(i),int(j)]=1
 
     arr_im = invert(arr_im)
     arr_im = skeletonize(arr_im)  # https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
