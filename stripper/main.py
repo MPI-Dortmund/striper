@@ -9,7 +9,7 @@ from stripper.maskStackCreator import MaskStackCreator
 from stripper.filamentEnhancer import enhance_images
 from stripper.filamentFilter import filterLines,asarray
 from stripper.filamentDetector import filamentDetectorWorker
-from numpy import mean,std
+from numpy import mean,std,amin
 
 # it is basically the run in the PipelineRunner.java
 def run():
@@ -47,9 +47,15 @@ def run():
     """ for the stripper I need the 'max_value' images"""
     enhanced_imgs=[img["max_value"] for img in enhanced_imgs]
 
-    """ If the "Detection.Equalize" flag is True, the enhanced images have to be normalize via mean and std """
+    """ If the "Detection.Equalize" flag is True, the enhanced images have to be normalize:
+        1) via mean and std 
+        2) between min img and 5
+        3) between 0 255
+    """
     if params.enhancerContext["equalize"] is True:
         enhanced_imgs = [(img-mean(img))/std(img) for img in enhanced_imgs]
+        enhanced_imgs = [normalizeImg(img=img,new_max=5, new_min=amin(img)) for img in enhanced_imgs]
+        enhanced_imgs = [normalizeImg(img=img, new_max=INTEGER_8BIT_MAX, new_min=INTEGER_8BIT_MIN) for img in enhanced_imgs]
 
     '''
      If the params.slice_range for a single input image case will be init via createSliceRange(slice_from=1,slice_to=1)
