@@ -99,14 +99,14 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
     masks = filamenFilter_context["mask"]
 
     #todo: when I'll be able to debug I have to see into it. I canno understand how could work input_images[pos]
-    for pos,l in enumerate(lines):
+    for pos in range(len(input_images)):
         line_image = zeros(input_images[0].shape,dtype=bool)
-        drawLines(detected_lines=l, im=line_image, fg=1)  #error
+        drawLines(detected_lines=lines[pos], im=line_image, fg=1)  #error
         line_image=invert(line_image)
         line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
         line_image = invert(line_image)
         maskImage = masks[pos] if isinstance(masks,list) else None
-        filtered_lines+=filterLineImage(line_image=line_image,input_image=input_images[pos],response_image =response_maps[pos], filamenFilter_context=filamenFilter_context,mask = maskImage)
+        filtered_lines+=filterLineImage(line_image=line_image,input_image=input_images[pos],response_image =response_maps, filamenFilter_context=filamenFilter_context,mask = maskImage)
         #filtered_lines.put(slice_position, filteredLines); because it has an hashmap
     return filtered_lines
 
@@ -151,6 +151,8 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
 			}
 		}
     """
+
+
 
     lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
     drawLines(detected_lines=lines,im=line_image,fg=1)

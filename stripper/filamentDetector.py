@@ -69,7 +69,7 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
     if isinstance(filamentDetectContext,dict ) is False or "sigma" not in filamentDetectContext.keys() or "thresholdRange" not in filamentDetectContext.keys():
         print("ERROR> invalid filamentDetectorContext variable. Use 'createFilamentDetectorContext(slice_from,slice_to)' to create it")
         exit(-1)
-    lines=[]
+
     p = param_json_for_ridge_detection(sigma=filamentDetectContext["sigma"],
                                        lower_th=filamentDetectContext["thresholdRange"]["lower_threshold"],
                                        upper_th=filamentDetectContext["thresholdRange"]["upper_threshold"],
@@ -77,10 +77,12 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
                                        darkLine=False, doCorrecPosition=True, doEstimateWidth=False, doExtendLine=True,
                                        overlap=False)
     stack_range = stack_imgs[0] if isinstance(stack_imgs,list) is False else stack_imgs[slice_range["slice_from"]:slice_range["slice_to"]+1]
+
+    lines = []
     for input_image in stack_range:
         ld = lineDetector.LineDetector(params=p)
         detected_lines=ld.get_lines(in_img=input_image)
         binary_img = binaryImage(shape_img=input_image.shape,detected_lines=detected_lines)
-        lines+=extractLines(binary_img)
+        lines.append(extractLines(binary_img))
         del ld
     return lines
