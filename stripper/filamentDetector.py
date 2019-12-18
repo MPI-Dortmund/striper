@@ -41,14 +41,14 @@ def binaryImage(shape_img,detected_lines):
     :param detected_lines:
     :return: numpy array
     """
-    arr_im=zeros(shape_img)
+    arr_im=zeros(shape_img,dtype=bool)
     """ plot the lines"""
     for line in detected_lines:
         #todo:If you change ridgeDetection out, you have to change that ...  I swap row and col of the lines because I get them from ridgeDetection prj. There I use PILImage. Since here I use numpy array (that have x,y swapped) I adapted that.
         for i,j in zip(line.row,line.col):
-            arr_im[int(i),int(j)]=1
+            arr_im[int(i),int(j)]=True
 
-    arr_im = invert(arr_im)
+    #arr_im = invert(arr_im)        --> because my init i do not need that
     arr_im = skeletonize(arr_im)  # https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
     return invert(arr_im)
 
