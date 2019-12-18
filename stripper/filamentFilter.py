@@ -307,7 +307,7 @@ def isJunction(x,y,line_image,connected=True):
     :param connected:
     :return:
     """
-    return countNeighbors(x=x, y=y, img=line_image, connected=connected) > 2
+    return countNeighbors(col=x, row=y, img=line_image, connected=connected) > 2
 
 
 

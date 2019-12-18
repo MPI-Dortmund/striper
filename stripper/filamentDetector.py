@@ -58,7 +58,7 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
     """
     it is public HashMap<Integer, ArrayList<Polygon>> getFilaments(SliceRange slice_range) of
         helicalPicker->FilamentDetector->FilamentDetectorWorker.java
-    :param stack_imgs: list of images
+    :param stack_imgs: list of images. Each image is a numpy array
     :param slice_range: dict. shold generate via helper.createSliceRange
     :param filamentDetectContext:  dict. shold generate via createFilamentDetectorContext
     :return:
@@ -80,6 +80,7 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
     stack_range = stack_imgs[0] if isinstance(stack_imgs,list) is False else stack_imgs[slice_range["slice_from"]:slice_range["slice_to"]+1]
 
     lines = []
+
     for input_image in stack_range:
         ld = lineDetector.LineDetector(params=p)
         detected_lines=ld.get_lines(in_img=input_image)

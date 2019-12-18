@@ -18,7 +18,14 @@ INTEGER_8BIT_MAX = 255
 INTEGER_8BIT_MIN = 0
 
 class Polygon:
-    """ row coordinates of the line/box points. """
+    """
+    row =x
+    col =y
+    NB:
+    PIL image (x,y)
+    numpy array (y,x)   --> shape[0],shape[1]
+    """
+    """row coordinates of the line/box points."""
     row = list()
     """ column coordinates of the line/box points. """
     col = list()
