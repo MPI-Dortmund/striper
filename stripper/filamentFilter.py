@@ -314,7 +314,7 @@ def isJunction(x,y,line_image,connected=True):
 def removeParallelLines(line_image, lines, radius):
     """
 
-    :param line_image:                                                                    [ByteProcessor]
+    :param line_image:         numpy array                                                           [ByteProcessor]
     :param lines: list of  object helper.polygon
     :param radius:
     :return:
@@ -326,8 +326,8 @@ def removeParallelLines(line_image, lines, radius):
                     if x<0 or y<0 or x>=line_image[0] or y>=line_image[1]:
                         continue
                     if line_image[x,y]>0 and isOnLine(x=x,y=y,line=l) is False:
-                        line_image.putpixel((int(x), int(y)), 0)
-                        line_image.putpixel((int(r), int(c)), 0)
+                        line_image[int(x),int(y)]=0
+                        line_image[int(r), int(c)] = 0
     return extractLines(line_image)
 
 def isOnLine(x,y,line):
@@ -385,14 +385,14 @@ def setRegionToBlack(x,y,img,radius):
     set as black a circle of radius on the input image
     :param x:
     :param y:
-    :param img:
+    :param img:     as numpy array
     :param radius:
     :return:
     """
     for i in range(-radius,radius+1):
         for j in range(-radius,radius+1):
             if img.shape[0] > x + i > -1 and img.shape[1] > y + j > -1:
-                img.putpixel((int(x + i), int(y + j)), 0)
+                img[int(x + i), int(y + j)] = 0
 
 
 
