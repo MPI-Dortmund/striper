@@ -53,6 +53,18 @@ class Polygon:
     def next(self):
         pass
 
+    def isInList(self,col,row):
+        """
+        Check if the given point is in the polygon
+        :param col:
+        :param row:
+        :return:
+        """
+        for c,r in zip(self.col,self.row):
+            if c==col and r==row:
+                return True
+        return False
+
 
 class Roi:
     """
