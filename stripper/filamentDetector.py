@@ -44,7 +44,8 @@ def binaryImage(shape_img,detected_lines):
     arr_im=zeros(shape_img)
     """ plot the lines"""
     for line in detected_lines:
-        for i,j in zip(line.col,line.row):
+        #todo:If you change ridgeDetection out, you have to change that ...  I swap row and col of the lines because I get them from ridgeDetection prj. There I use PILImage. Since here I use numpy array (that have x,y swapped) I adapted that.
+        for i,j in zip(line.row,line.col):
             arr_im[int(i),int(j)]=1
 
     arr_im = invert(arr_im)
