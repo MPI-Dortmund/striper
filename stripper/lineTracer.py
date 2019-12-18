@@ -1,66 +1,60 @@
 from stripper.helper import Polygon
-from  numpy import zeros
+from  numpy import where
 
+#todo: more test because i rewrote it
+"""
+Since my first translation was buggy and really slow because the use of an "img_map" to track the lines in order to find them.
+I rewrote the functions without image_map as following.
+"""
 def extractLines(img):
     """
     return a list of polygon
-    :param img: as numpy array
+    :param img: as binary numpy array
     :return:
     """
+    index_r, index_c = where(img == False)  # coordinate pixel black
     lines=list()
-    img_map=zeros(img.shape)
-    rangeCol=range(img.shape[0])
-    rangeRow = range(img.shape[1])
-    for col in rangeCol:
-        for row in rangeRow:
-            if isStartPoint(col=col, row=row, img=img, connected=True) and img_map[col, row] == 0:
-                img_map[col, row] =1
-                lines.append(traceLine(col=col, row=row, img=img, img_map=img_map))
-
-    for col in rangeCol:
-        for row in rangeRow:
-            if img[col,row] and img_map[col,row] == 0:
-                img_map[col, row] =1
-                lines.append(traceLine(col=col, row=row, img=img, img_map=img_map))
-
+    for col, row in zip(index_r, index_c ):
+        if isStartPoint(col=col, row=row, img=img, connected=True) is True:
+            lines.append(traceLine(col=col, row=row, img=img))
     return lines
 
 
-
-def traceLine(col, row, img, img_map):
+def traceLine(col, row, img):
     """
     Returns a Polygon obj
     :param col:
     :param row:
-    :param img: as numpy array
-    :param img_map: as numpy array
+    :param img: as binary numpy array
+    :param img_map: as binary numpy array
     :return:
     """
-    p=Polygon(col=[col], row=[row])
-    img_map[col, row]=1
+    p=Polygon(col=[], row=[])
     while True:
-        point=getNext(col=col, row=row, img=img, img_map=img_map)
-        if point is None:
+        point=getNext(col=col, row=row, img=img)
+        # To avoid to rewrite a map image to find the lines I need this workaround over the list of point for avoiding inifinite loop
+        #todo: rewriting getNext in a properly way I could avoid this workaround .... Do that if we will have performance problems or if you'd like to vectorize the code
+        if point is None or p.isInList(col=point[0],row=point[1]) is True:
             break
-        img_map[point[0],point[1]] = 1
         p.add_point(point[0],point[1])
+        col=point[0]
+        row = point[1]
     return p
 
 
-def getNext(col, row, img, img_map):
+def getNext(col, row, img):
     """
     Returns the coordinate of the next point if exists. otherwise None
     :param col:
     :param row:
     :param img: as numpy array
-    :param img_map: as numpy array
     :return:
     """
     for i in [-1,0,1]:
         for j in [-1, 0, 1]:
-            if (j==0 and i== 0) or isInside(col=col + 1, row=row + 1, img=img) is False:
+            if (j==0 and i== 0) or 0<col+i>=img.shape[0] or 0<row+j>=img.shape[1]:
                 continue
-            if  0<=col+i<img.shape[0] and 0<=row+j<img.shape[0] and img[col + i, row + j]>0 and 0<=col+i<img_map.shape[0] and 0<=row+j<img_map.shape[0]  and img_map[col + i, row + j]==0:
+            if  0<=col+i<img.shape[0] and 0<=row+j<img.shape[0] and img[col + i, row + j] ==False :
                 return [col + i, row + j]
     return None
 
@@ -74,16 +68,16 @@ def countNeighbors(col, row, img, connected=True):
     :return:
     """
     n=0
-    if img[col, row] >0 and col+1<img.shape[0] and row+1<img.shape[1]:
+    if img[col, row] == False and col+1<img.shape[0] and row+1<img.shape[1]:
         if connected is True :
             for i in [-1,0,1]:
                 for j in [-1, 0, 1]:
                     if j==0 and i==0:
                         continue
-                    if img[col + 1, row + 1]>0:
+                    if img[col + i, row + j] == False:
                         n+=1
         else:
-            n+= (img[col + 1, row] > 0) + (img[col - 1, row] > 0) + (img[col, row + 1] > 0) + (img[col, row - 1] > 0)
+            n+= (img[col + 1, row] ==False ) + (img[col - 1, row] ==False) + (img[col, row + 1] ==False) + (img[col, row - 1] ==False)
     return n
 
 
@@ -97,16 +91,3 @@ def isStartPoint(col, row, img, connected=True):
     :return:
     """
     return countNeighbors(col=col, row=row, img=img, connected=connected) == 1
-
-
-
-def isInside(col, row, img):
-    """
-    :param col:
-    :param row:
-    :param img: as numpy array
-    :return:
-    """
-    if col<0 or row<0 or col>=img.shape[0] or row>=img.shape[1]:
-        return False
-    return True
