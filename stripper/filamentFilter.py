@@ -288,7 +288,7 @@ def removeJunctions(line_image,removement_radius):
                 juncPos.add_point(col,row)
 
     for col,row in zip(juncPos.col,juncPos.row):
-        setRegionToBlack(col,row,img=line_image,radius=removement_radius)
+        setRegionToWhite(col,row,img=line_image,radius=removement_radius)
 
 
 
@@ -369,13 +369,13 @@ def splitByStraightness(lines,line_image, min_straightness, window_length, radiu
             s=getStraightness(l,i,i+window_length)
             if s<min_straightness:
                 index = int(i + window_length / 2 + 1)
-                setRegionToBlack(l.col[index],l.row[index],line_image,radius)
+                setRegionToWhite(l.col[index],l.row[index],line_image,radius)
     return extractLines(line_image)
 
 
-def setRegionToBlack(col, row, img, radius):
+def setRegionToWhite(col, row, img, radius):
     """
-    set as black a circle of radius on the input image
+    set as white a circle of radius on the input image
     :param col:
     :param row:
     :param img:     as binary numpy array
@@ -385,7 +385,7 @@ def setRegionToBlack(col, row, img, radius):
     for i in range(-radius,radius+1):
         for j in range(-radius,radius+1):
             if img.shape[0] > col + i > -1 and img.shape[1] > row + j > -1:
-                img[int(col + i), int(row + j)] = False
+                img[int(col + i), int(row + j)] = True
 
 
 
