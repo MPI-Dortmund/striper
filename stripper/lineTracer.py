@@ -1,4 +1,4 @@
-from stripper.helper import Polygon
+from stripper.helper import Polygon,same_polygon
 from  numpy import where
 
 #todo: more test because i rewrote it
@@ -16,7 +16,16 @@ def extractLines(img):
     lines=list()
     for col, row in zip(index_r, index_c ):
         if isStartPoint(col=col, row=row, img=img, connected=True) is True:
-            lines.append(traceLine(col=col, row=row, img=img))
+            l=traceLine(col=col, row=row, img=img)
+
+            """ Avoid to insert twice the same line """
+            isinLines=False
+            for p in lines:
+                isinLines=same_polygon(p,l)
+                if isinLines is True:
+                    break
+            if isinLines is False:
+                lines.append(l)
     return lines
 
 

@@ -65,6 +65,16 @@ class Polygon:
                 return True
         return False
 
+def same_polygon(p1,p2):
+    """
+    Check if the 2 polygon have the same points. They do not have to be in the same order
+    """
+    if len(p1.col) ==0 or len(p1.col)!=len(p2.col):
+        return False
+    for c1,r1 in zip(p1.col,p1.row):
+        if p2.isInList(c1,r1) is False:
+            return False
+    return True
 
 class Roi:
     """
