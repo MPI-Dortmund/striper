@@ -1,6 +1,6 @@
 from scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
-from numpy import where,pad,arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
+from numpy import where,arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
 from skimage.morphology import skeletonize
 from skimage.util import invert
 
@@ -112,9 +112,9 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
 
 
 
-def filterLineImage(line_image,input_image,response_image,filamenFilter_context,mask=None):
+def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
     """
-     1. Set border to zero      it was "private void setBorderToZero(ImageProcessor ip, int bordersize)" I used np.pad to paint the border white
+     1. Set border to zero      it was "private void setBorderToZero(ImageProcessor ip, int bordersize)"
 	 2. Remove junctions
 	 3. (Apply mask)            it was "private void applyMask(ImageProcessor lineImage, ImageProcessor mask)" I hard coded into this function
 	 4. Straightness
@@ -134,8 +134,10 @@ def filterLineImage(line_image,input_image,response_image,filamenFilter_context,
         print("ERROR> invalid filamenFilter_context variable. Use 'createFilamentFilterContext(	min_number_boxes = 0,min_line_straightness = 0,window_width_straightness = 5,removement_radius = 0,fit_distribution = False,sigma_min_response = 0,sigma_max_response = 0,min_filament_distance = 0,border_diameter = 0,double_filament_insensitivity = 1,userFilters = None,box_size = 1,box_distance = 1,mask = None)' to create it")
         exit(-1)
 
-    line_image = pad(line_image, pad_width=filamenFilter_context["border_diameter"], mode='constant', constant_values=True)
+    setBorderToZero(line_image=line_image, bordersize=filamenFilter_context["border_diameter"])
     removeJunctions(line_image=line_image, removement_radius=filamenFilter_context["removement_radius"])
+
+    #todo:check with a mask in order to adapt it to the python logic. I think you have just to replace 0 with True for cleaning code purpouse
     if mask is not  None:
         line_image[mask==0]=0
 
@@ -445,3 +447,14 @@ def calcNumberOfBoxes(l,boxSize,boxDistance):
         n+=1
         l.hasNext(index,yboxToBoxDistSq=boxSize,distToEndSq=boxDistance)
     return n
+
+
+def setBorderToZero(line_image, bordersize):
+    """
+    :param line_image:
+    :param bordersize:
+    """
+    line_image[0:bordersize, :] = True
+    line_image[line_image.shape[0]-bordersize:, :] = True
+    line_image[:,0:bordersize] = True
+    line_image[:,line_image.shape[1]-bordersize:] = True
