@@ -10,7 +10,7 @@ def extractLines(img):
     """
     return a list of polygon
     :param img: as binary numpy array
-    :return:
+    :return: list of line as list of obj polygon
     """
     index_r, index_c = where(img == False)  # coordinate pixel black
     lines=list()
@@ -31,12 +31,11 @@ def extractLines(img):
 
 def traceLine(col, row, img):
     """
-    Returns a Polygon obj
+    It track the line starting from the given point. Returns as Polygon obj
     :param col:
     :param row:
     :param img: as binary numpy array
-    :param img_map: as binary numpy array
-    :return:
+    :return: line as polygon obj
     """
     p=Polygon(col=[col], row=[row])
     while True:
@@ -57,7 +56,7 @@ def getNext(col, row, img):
     :param col:
     :param row:
     :param img: as numpy array
-    :return:
+    :return: Returns the coordinate of the next point if exists. otherwise None
     """
     for i in [-1,0,1]:
         for j in [-1, 0, 1]:
@@ -70,11 +69,13 @@ def getNext(col, row, img):
 
 def countNeighbors(col, row, img, connected=True):
     """
+    Return the number of pixel around the pixel.
+    If connected is False evaluates pixels in the positions of the cardinal points
     :param col:
     :param row:
     :param img: as numpy array
     :param connected:
-    :return:
+    :return: number of neighbors points
     """
     n=0
     if img[col, row] == False and col+1<img.shape[0] and row+1<img.shape[1]:
@@ -93,10 +94,12 @@ def countNeighbors(col, row, img, connected=True):
 
 def isStartPoint(col, row, img, connected=True):
     """
+    Return True if the given point is the first (or last) in a line.
+    In case of single point it returns False
     :param col:
     :param row:
     :param img: as numpy array
     :param connected:
-    :return:
+    :return: True f the point is at the ends of the line
     """
     return countNeighbors(col=col, row=row, img=img, connected=connected) == 1
