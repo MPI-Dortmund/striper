@@ -397,6 +397,13 @@ def getStraightness(line, start,end):
     :param end: index of the ending point
     :return:
     """
+
+    s=0
+    for i in range(start,end):
+        s=+ math_sqrt( (line.col[i]-line.col[i+1]) * (line.col[i]-line.col[i+1])    +   (line.row[i]-line.row[i+1]) * (line.row[i]-line.row[i+1]) )
+    distance =  math_sqrt( (line.col[start]-line.col[end]) * (line.col[start]-line.col[end])    +   (line.row[start]-line.row[end]) * (line.row[start]-line.row[end]) )
+    #todo: vectorize it. Since I changed the structure of the input value it does not work
+    """
     xend = line.col[end][:-1]
     xstart = line.col[start][1:]
     yend = line.row[end][:-1]
@@ -416,7 +423,8 @@ def getStraightness(line, start,end):
     s =np_sum(sqrt_sum_pows)
 
     distance = math_sqrt( (line.col[start]-line.col[end])*(line.col[start]-line.col[end]) + (line.row[start]-line.row[end])*(line.row[start]-line.row[end]) )
-    return distance/s
+    """
+    return distance / s
 
 
 
