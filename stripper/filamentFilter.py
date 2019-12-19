@@ -378,14 +378,14 @@ def setRegionToBlack(col, row, img, radius):
     set as black a circle of radius on the input image
     :param col:
     :param row:
-    :param img:     as numpy array
+    :param img:     as binary numpy array
     :param radius:
     :return:
     """
     for i in range(-radius,radius+1):
         for j in range(-radius,radius+1):
             if img.shape[0] > col + i > -1 and img.shape[1] > row + j > -1:
-                img[int(col + i), int(row + j)] = 0
+                img[int(col + i), int(row + j)] = False
 
 
 
