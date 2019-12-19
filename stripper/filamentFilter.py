@@ -158,9 +158,9 @@ def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
 
 
     lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
-    drawLines(detected_lines=lines,im=line_image,fg=1)
+    drawLines(detected_lines=lines,im=line_image,fg=False)
     lines=filterByResponseMeanStd(lines=lines, response_map=response_image, sigmafactor_max=filamenFilter_context["sigma_max_response"], sigmafactor_min=filamenFilter_context["sigma_min_response"],  double_filament_insensitivity=filamenFilter_context["double_filament_insensitivity"], fitDistr=filamenFilter_context["fit_distribution"])
-    drawLines(detected_lines=lines, im=line_image, fg=1)
+    drawLines(detected_lines=lines, im=line_image, fg=False)
     lines=removeParallelLines(line_image=line_image, lines=lines, radius=filamenFilter_context["min_filament_distance"])
     return filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
 
@@ -336,12 +336,13 @@ def isOnLine(x,y,line):
             return True
     return False
 
-def drawLines(detected_lines,im,fg=255):
+def drawLines(detected_lines,im,fg=False):
     """
+    The im for default is considered binary hence fg=False means Black) ... it works for L type too
     plot the lines, in detected_lines' on a new image of the given size.
-    For default the bacground colour is black and the lines are white
+    For default the bacground colour is white and the lines are black
     :param detected_lines: list of  object Line from 'ridge_detection.basicGeometry'
-    :param im:
+    :param im:  numpy array (it should be binary hence fg=False means Black) ... it works
     :param fg: lines color
     :return:
     """
