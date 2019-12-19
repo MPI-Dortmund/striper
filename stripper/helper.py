@@ -76,6 +76,25 @@ def same_polygon(p1,p2):
             return False
     return True
 
+def included_in(p1,p2):
+    """
+    It does not consider if they are the same polygon
+    If p1 is included in p2 return p1
+    If p2 is included in p1 return p2
+    else None
+    """
+    if len(p1.col) == len(p2.col):
+        return None
+    big=p1
+    small=p2
+    if len(p1.col)<len(p2.col):
+        big=p2
+        small=p1
+    for c1,r1 in zip(small.col,small.row):
+        if big.isInList(c1,r1) is False:
+            return None
+    return small
+
 class Roi:
     """
     It is boxplacer-->LRoi.java that is basically the native ROI.java
