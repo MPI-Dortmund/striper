@@ -29,7 +29,7 @@ def traceLine(col, row, img):
     :param img_map: as binary numpy array
     :return:
     """
-    p=Polygon(col=[], row=[])
+    p=Polygon(col=[col], row=[row])
     while True:
         point=getNext(col=col, row=row, img=img)
         # To avoid to rewrite a map image to find the lines I need this workaround over the list of point for avoiding inifinite loop
