@@ -1,6 +1,6 @@
 from scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
-from numpy import pad,arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
+from numpy import where,pad,arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
 from skimage.morphology import skeletonize
 from skimage.util import invert
 
@@ -280,25 +280,25 @@ def removeJunctions(line_image,removement_radius):
     :return:
     """
     juncPos = Polygon(col=[],row=[])
-    for x in line_image[0]:
-        for y in line_image[1]:
-            if isJunction(x=x,y=y,line_image=line_image,connected=True):
-                juncPos.add_point(x,y)
+    index_r, index_c = where(line_image == False)  # coordinate pixel black
+    for col, row in zip(index_r, index_c ):
+            if isJunction(col=col, row=row, line_image=line_image, connected=True):
+                juncPos.add_point(col,row)
 
-    for x,y in zip(juncPos.col,juncPos.row):
-        setRegionToBlack(x,y,img=line_image,radius=removement_radius)
+    for col,row in zip(juncPos.col,juncPos.row):
+        setRegionToBlack(col,row,img=line_image,radius=removement_radius)
 
 
 
-def isJunction(x,y,line_image,connected=True):
+def isJunction(col, row, line_image, connected=True):
     """
-    :param x:
-    :param y:
+    :param col:
+    :param row:
     :param line_image:
     :param connected:
     :return:
     """
-    return countNeighbors(col=x, row=y, img=line_image, connected=connected) > 2
+    return countNeighbors(col=col, row=row, img=line_image, connected=connected) > 2
 
 
 
@@ -371,19 +371,19 @@ def splitByStraightness(lines,line_image, min_straightness, window_length, radiu
     return extractLines(line_image)
 
 
-def setRegionToBlack(x,y,img,radius):
+def setRegionToBlack(col, row, img, radius):
     """
     set as black a circle of radius on the input image
-    :param x:
-    :param y:
+    :param col:
+    :param row:
     :param img:     as numpy array
     :param radius:
     :return:
     """
     for i in range(-radius,radius+1):
         for j in range(-radius,radius+1):
-            if img.shape[0] > x + i > -1 and img.shape[1] > y + j > -1:
-                img[int(x + i), int(y + j)] = 0
+            if img.shape[0] > col + i > -1 and img.shape[1] > row + j > -1:
+                img[int(col + i), int(row + j)] = 0
 
 
 
