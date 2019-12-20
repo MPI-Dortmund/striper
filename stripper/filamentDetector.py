@@ -83,7 +83,7 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
 
     for input_image in stack_range:
         ld = lineDetector.LineDetector(params=p)
-        detected_lines=ld.get_lines(in_img=input_image)
+        detected_lines=ld.detectLines(img=input_image)
         binary_img = binaryImage(shape_img=input_image.shape,detected_lines=detected_lines)
         lines.append(extractLines(binary_img))
         del ld
