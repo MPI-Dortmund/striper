@@ -9,7 +9,10 @@ from stripper.maskStackCreator import MaskStackCreator
 from stripper.filamentEnhancer import enhance_images
 from stripper.filamentFilter import filterLines,asarray
 from stripper.filamentDetector import filamentDetectorWorker
+from stripper.box import placeBoxesPainter,createBoxPlacingContext
 from numpy import mean,std,amin
+
+
 
 # it is basically the run in the PipelineRunner.java
 def run():
@@ -79,6 +82,12 @@ def run():
                                 input_images=input_imgs,
                                 response_maps=enhanced_imgs)
 
+    #todo: how create placing_context via params?
+    placing_context = createBoxPlacingContext(slicePosition=1, box_size=64, box_distance=10, place_points=False)
+    img = placeBoxesPainter(lines=filtered_lines, target_img=img[0], placing_context=placing_context,box_top_left=False)
+    img.save("real_case.jpg")
+    img.show()
+
     """ Correct slice positions for originak stack if only a substack was processed """
     #todo: is there somethings to do?
 
@@ -89,6 +98,8 @@ def run():
 
     """ """
     print("END:", datetime.now())
+
+
 
 if __name__ == "__main__":
     run()
