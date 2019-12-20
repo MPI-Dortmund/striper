@@ -4,6 +4,7 @@ JAVA CLASS THAT I CONVERTED IN PYTHON DICTIONARY
 from numpy import zeros,multiply,divide,array,amin,amax
 from ridge_detection.basicGeometry import Line
 from PIL import Image
+from math import floor, ceil
 
 
 
@@ -56,6 +57,25 @@ class Polygon:
                 return True
         return False
 
+    def smart_cast_row_and_col(self):
+        """
+        Cast the col and row to be an integer using ceil or flor in function of the rdecimal value
+        """
+        for i in range(self.num-1):
+            if self.row[i]<0.5:
+                self.row[i] = 0
+            elif 1>self.row[i]>0.5:
+                self.row[i] = 1
+            else:
+                self.row[i] = floor(self.row[i]) if self.row[i] % int(self.row[i]) < 0.5 else ceil(self.row[i])
+            if self.col[i] < 0.5:
+                self.col[i] = 0
+            elif 1 > self.col[i] > 0.5:
+                self.col[i] = 1
+            else:
+                self.col[i] = floor(self.col[i]) if self.col[i] % int(self.col[i]) < 0.5 else ceil(self.col[i])
+
+
 def same_polygon(p1,p2):
     """
     Check if the 2 polygon have the same points. They do not have to be in the same order
@@ -98,6 +118,7 @@ class Roi:
         self.w = w
         self.h = h
         self.line_id = line_id
+
 
 class Lines_of_ROI:
     """
@@ -223,3 +244,5 @@ def param_json_for_ridge_detection(sigma,lower_th,upper_th,max_l_len,min_l_len,d
             "save_on_disk": False
     }
     return data
+
+
