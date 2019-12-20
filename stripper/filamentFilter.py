@@ -101,12 +101,12 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
     #todo: when I'll be able to debug I have to see into it. I canno understand how could work input_images[pos]
     for pos in range(len(input_images)):
         line_image = zeros(input_images[0].shape,dtype=bool)
-        drawLines(detected_lines=lines[pos], im=line_image, fg=1)  #error
+        drawLines(detected_lines=lines[pos], im=line_image, fg=False)  #error
         #line_image=invert(line_image)          --> because my init i do not need that
         line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
         line_image = invert(line_image)
         maskImage = masks[pos] if isinstance(masks,list) else None
-        filtered_lines+=filterLineImage(line_image=line_image,input_image=input_images[pos],response_image =response_maps, filamenFilter_context=filamenFilter_context,mask = maskImage)
+        filtered_lines+=filterLineImage(line_image=line_image,response_image =response_maps, filamenFilter_context=filamenFilter_context,mask = maskImage)
         #filtered_lines.put(slice_position, filteredLines); because it has an hashmap
     return filtered_lines
 
@@ -124,7 +124,6 @@ def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
 	 8. Remove parallel lines
 	 9. Length filter 2
     :param line_image:                                      [ImageProcessor]
-    :param input_image:                                     [ImageProcessor]
     :param response_image:                                  [ImageProcessor]
     :param mask:                                            [ImageProcessor]
     :param filamenFilter_context: dict with info about the filament filter. Should be crated via 'createFilamentFilterContext'
@@ -303,10 +302,9 @@ def isJunction(col, row, line_image, connected=True):
     return countNeighbors(col=col, row=row, img=line_image, connected=connected) > 2
 
 
-
+#todo: check in a real case scenario
 def removeParallelLines(line_image, lines, radius):
     """
-
     :param line_image:         numpy array                                                           [ByteProcessor]
     :param lines: list of  object helper.polygon
     :param radius:
@@ -316,11 +314,11 @@ def removeParallelLines(line_image, lines, radius):
         for r,c in zip(l.col, l.row):
             for x in range(r-radius,r+radius):
                 for y in range(c - radius, c + radius):
-                    if x<0 or y<0 or x>=line_image[0] or y>=line_image[1]:
+                    if 0>x>=line_image[0] or 0>y>=line_image[1]:
                         continue
                     if line_image[x,y]>0 and isOnLine(x=x,y=y,line=l) is False:
-                        line_image[int(x),int(y)]=0
-                        line_image[int(r), int(c)] = 0
+                        line_image[int(x),int(y)]=True
+                        line_image[int(r), int(c)] = True
     return extractLines(line_image)
 
 def isOnLine(x,y,line):
