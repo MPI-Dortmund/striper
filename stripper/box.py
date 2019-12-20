@@ -1,4 +1,5 @@
-from stripper.helper import Roi, Lines_of_ROI, Polygon
+from stripper.helper import Roi, Lines_of_ROI
+from PIL import Image,ImageDraw
 
 def createBoxPlacingContext(slicePosition =1,box_size = 2,box_distance = 4,place_points = False):
     """
@@ -59,40 +60,53 @@ class BoxPositionIterator:
 
 def placeBoxesPainter(lines, target_img, placing_context):
     """
-
+    I inverted col,row because at the beginning I have a np. array and convert it as PIL image to draw the box
+    RED_PIXEL_LINE = (255, 0, 0)
     :param lines:           list of helper.Poligon
-    :param target_img:      output img          #todo: should be PIL or numpy array?
+    :param target_img:      It is the original input image in grayscale as numpy array
     :param placing_context: dict with info about the box placing info filter. Should be crated via 'createBoxPlacingContext'
-    :return:
+    :return: the target img with the painted boxes in RGB mode as PIL
     """
     #todo:  implement public ArrayList<Line> placeBoxes(ArrayList<Polygon> lines, ImagePlus targetImage, BoxPlacingContext placing_context)
-    if isinstance(placing_context,dict ) is False or "slicePosition" not in placing_context.keys() or "boxsize" not in placing_context.keys() or "box_distance" not in placing_context.keys() or "place_points" not in placing_context.keys():
+    if isinstance(placing_context,dict ) is False or "slicePosition" not in placing_context.keys() or "box_size" not in placing_context.keys() or "box_distance" not in placing_context.keys() or "place_points" not in placing_context.keys():
         print("ERROR> invalid placing_context variable. Use 'createBoxPlacingContext(slicePosition =1,box_size = 2,box_distance = 4,place_points = False)' to create it")
         exit(-1)
-    allLines=Lines_of_ROI()
-    for p in lines:
-        pass
-    pass
+    lines_in_roi=placeBoxes( lines=lines, placing_context=placing_context)
+    pil_img=Image.fromarray(target_img).convert('RGB')
+    draw = ImageDraw.Draw(pil_img)
+    bs=placing_context["box_size"]
+    for l in lines_in_roi.lines:
+        for r in l:
+            """ since the ROI's coordinates are calculated on np.array now I have to switch them"""
+            draw.rectangle(xy=(int(r.y-bs/2),int(r.x-bs/2),int(r.y+bs/2),int(r.x+bs/2)),fill=None,outline=(255, 0, 0))
+    return pil_img
 
 
 
-def placeBoxes( lines, target_img, placing_context):
+
+
+def placeBoxes( lines, placing_context):
     """
-
     :param lines:           list of helper.Poligon
-    :param target_img:      output img          #todo: should be PIL or numpy array?
     :param placing_context: dict with info about the box placing info filter. Should be crated via 'createBoxPlacingContext'
-    :return:
+    :return: the list of Roi to plot for each polygon in lines
     """
-    if isinstance(placing_context,dict ) is False or "slicePosition" not in placing_context.keys() or "boxsize" not in placing_context.keys() or "box_distance" not in placing_context.keys() or "place_points" not in placing_context.keys():
+    if isinstance(placing_context,dict ) is False or "slicePosition" not in placing_context.keys() or "box_size" not in placing_context.keys() or "box_distance" not in placing_context.keys() or "place_points" not in placing_context.keys():
         print("ERROR> invalid placing_context variable. Use 'createBoxPlacingContext(slicePosition =1,box_size = 2,box_distance = 4,place_points = False)' to create it")
         exit(-1)
 
-    #todo: what???
-    for pos,img in enumerate(list(set(lines))):
-        placing_context["slicePosition"]=pos
-        lines_in_img = lines # todo: what???
-        if len(lines_in_img):
-            placeBoxesPainter(lines=lines_in_img, target_img=target_img, placing_context=placing_context)
+    box_size = placing_context["box_size"]
+
+    lines_in_roi = Lines_of_ROI()   # it is the representation of the lines in box
+    for l in lines:
+        index=lines_in_roi.createLine()
+        it = BoxPositionIterator(p=l, boxsize= box_size, boxdista=placing_context["box_distance"], topleft=True)
+        while it.hasNext():
+            point=it.next()
+            if placing_context["place_points"] is True:
+                box_size =1
+            roi=Roi(x=point[0],y=point[1],w=box_size,h=box_size,line_id=index)
+            lines_in_roi.add_ROI(roi=roi)
+    return lines_in_roi
 
 

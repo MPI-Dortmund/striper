@@ -137,8 +137,12 @@ class Lines_of_ROI:
         if index>len(self.lines):
             print(f"ERROR: out of range. Line in Lines_of_ROI not found: number of line is '{len(self.lines)}. index in {index}")
             exit(-1)
+        return len(self.lines[index])
 
-
+    def createLine(self):
+        """ Create nex line in the list and return its index"""
+        self.lines.append(list())
+        return self.get_totLine()-1
 
 
 
