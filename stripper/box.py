@@ -58,20 +58,21 @@ class BoxPositionIterator:
 
 
 
-def placeBoxesPainter(lines, target_img, placing_context):
+def placeBoxesPainter(lines, target_img, placing_context,box_top_left=True):
     """
     I inverted col,row because at the beginning I have a np. array and convert it as PIL image to draw the box
     RED_PIXEL_LINE = (255, 0, 0)
     :param lines:           list of helper.Poligon
     :param target_img:      It is the original input image in grayscale as numpy array
     :param placing_context: dict with info about the box placing info filter. Should be crated via 'createBoxPlacingContext'
+    :param box_top_left: It is the boolean parameter of 'BoxPositionIterator'. In Java is True but in python with True seems to not center the straight (over x or y) lines
     :return: the target img with the painted boxes in RGB mode as PIL
     """
     #todo:  implement public ArrayList<Line> placeBoxes(ArrayList<Polygon> lines, ImagePlus targetImage, BoxPlacingContext placing_context)
     if isinstance(placing_context,dict ) is False or "slicePosition" not in placing_context.keys() or "box_size" not in placing_context.keys() or "box_distance" not in placing_context.keys() or "place_points" not in placing_context.keys():
         print("ERROR> invalid placing_context variable. Use 'createBoxPlacingContext(slicePosition =1,box_size = 2,box_distance = 4,place_points = False)' to create it")
         exit(-1)
-    lines_in_roi=placeBoxes( lines=lines, placing_context=placing_context)
+    lines_in_roi=placeBoxes( lines=lines, placing_context=placing_context,box_top_left=box_top_left)
     pil_img=Image.fromarray(target_img).convert('RGB')
     draw = ImageDraw.Draw(pil_img)
     bs=placing_context["box_size"]
@@ -85,10 +86,11 @@ def placeBoxesPainter(lines, target_img, placing_context):
 
 
 
-def placeBoxes( lines, placing_context):
+def placeBoxes( lines, placing_context,box_top_left=True):
     """
     :param lines:           list of helper.Poligon
     :param placing_context: dict with info about the box placing info filter. Should be crated via 'createBoxPlacingContext'
+    :param box_top_left: It is the boolean parameter of 'BoxPositionIterator'. In Java is True but in python with True seems to not center the straight (over x or y) lines
     :return: the list of Roi to plot for each polygon in lines
     """
     if isinstance(placing_context,dict ) is False or "slicePosition" not in placing_context.keys() or "box_size" not in placing_context.keys() or "box_distance" not in placing_context.keys() or "place_points" not in placing_context.keys():
@@ -100,7 +102,7 @@ def placeBoxes( lines, placing_context):
     lines_in_roi = Lines_of_ROI()   # it is the representation of the lines in box
     for l in lines:
         index=lines_in_roi.createLine()
-        it = BoxPositionIterator(p=l, boxsize= box_size, boxdista=placing_context["box_distance"], topleft=True)
+        it = BoxPositionIterator(p=l, boxsize= box_size, boxdista=placing_context["box_distance"], topleft=box_top_left)
         while it.hasNext():
             point=it.next()
             if placing_context["place_points"] is True:
