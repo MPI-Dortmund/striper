@@ -1,6 +1,6 @@
 from scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
-from numpy import where,arange,zeros,multiply,exp,pi,sqrt as np_sqrt, sum as np_sum,asarray
+from numpy import where,arange,exp,pi, asarray,ones, sqrt as np_sqrt
 from skimage.morphology import skeletonize
 from skimage.util import invert
 
@@ -101,7 +101,7 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
 
     #todo: when I'll be able to debug I have to see into it. I canno understand how could work input_images[pos]
     for pos in range(len(input_images)):
-        line_image = zeros(input_images[0].shape,dtype=bool)
+        line_image = ones(input_images[0].shape,dtype=bool)
         drawLines(detected_lines=lines[pos], im=line_image, fg=False)  #error
         #line_image=invert(line_image)          --> because my init i do not need that
         line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
