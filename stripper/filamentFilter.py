@@ -107,7 +107,7 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
         line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
         line_image = invert(line_image)
         maskImage = masks[pos] if isinstance(masks,list) else None
-        filtered_lines+=filterLineImage(line_image=line_image,response_image =response_maps, filamenFilter_context=filamenFilter_context,mask = maskImage)
+        filtered_lines+=filterLineImage(line_image=line_image,response_image =response_maps[pos], filamenFilter_context=filamenFilter_context,mask = maskImage)
         #filtered_lines.put(slice_position, filteredLines); because it has an hashmap
     return filtered_lines
 
