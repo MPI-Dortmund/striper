@@ -6,6 +6,7 @@ from skimage.util import invert
 
 from stripper.helper import JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
 from stripper.lineTracer import countNeighbors,extractLines
+from stripper.box import BoxPositionIterator
 
 #todo: numpy array instead of PIL img. Should I swap the loop operation over col,row??
 """
@@ -434,7 +435,7 @@ def filterByLength(lines,filamenFilter_context):
     """
     filtered=list()
     for l in lines:
-        if calcNumberOfBoxes(l,filamenFilter_context["box_size"],filamenFilter_context["box_distance"])>=filamenFilter_context["min_number_boxes"]:
+        if calcNumberOfBoxes(l,filamenFilter_context["box_size"],filamenFilter_context["box_distance"]) >= filamenFilter_context["min_number_boxes"]:
             filtered.append(l)
     return filtered
 
@@ -449,10 +450,10 @@ def calcNumberOfBoxes(l,boxSize,boxDistance):
     :return: the number of boxes in the polygon
     """
     n = 0
-    index =0
-    while l.index<l.num:
+    it = BoxPositionIterator(p=l, boxsize=boxSize, boxdista=boxDistance, topleft=False)
+    while it.hasNext():
         n+=1
-        l.hasNext(index,yboxToBoxDistSq=boxSize,distToEndSq=boxDistance)
+        it.next()
     return n
 
 

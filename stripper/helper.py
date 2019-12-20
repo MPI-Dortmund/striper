@@ -44,15 +44,6 @@ class Polygon:
         self.col.append(x)
         self.num+=1
 
-    def hasNext(self,boxToBoxDistSq,distToEndSq):
-        return self.nextPointPos(boxToBoxDistSq=boxToBoxDistSq,distToEndSq=distToEndSq)
-
-    def nextPointPos(self,boxToBoxDistSq,distToEndSq):
-        pass
-
-    def next(self):
-        pass
-
     def isInList(self,col,row):
         """
         Check if the given point is in the polygon
