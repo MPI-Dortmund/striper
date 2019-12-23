@@ -102,7 +102,7 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
     #todo: when I'll be able to debug I have to see into it. I canno understand how could work input_images[pos]
     for pos in range(len(input_images)):
         line_image = ones(input_images[0].shape,dtype=bool)
-        drawLines(detected_lines=lines, im=line_image, fg=False)  #error
+        drawLines(detected_lines=lines[pos], im=line_image, fg=False)  #error
         #line_image=invert(line_image)         # --> because my init i do not need that
         # todo: more test. Since I already skeletonized in a previous functions and now i do not invert the image because my init. the following 2 operations are wrong.
             # Since a test the code step by step and not the wntire workflow could be that I'll have to restore these operation
