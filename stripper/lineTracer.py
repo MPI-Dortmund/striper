@@ -39,9 +39,9 @@ def traceLine(col, row, img):
     """
     p=Polygon(col=[col], row=[row])
     while True:
-        point=getNext(col=col, row=row, img=img)
+        point=getNext(col=col, row=row, img=img,p=p)
         # To avoid to rewrite a map image to find the lines I need this workaround over the list of point for avoiding inifinite loop
-        #todo: rewriting getNext in a properly way I could avoid this workaround .... Do that if we will have performance problems or if you'd like to vectorize the code
+        #todo: rewriting getNext using mask and .sum when you vectorize the code in order to clean and speed up the code ... pay attention top the border
         if point is None or p.isInList(col=point[0],row=point[1]) is True:
             break
         p.add_point(point[0],point[1])
@@ -50,19 +50,20 @@ def traceLine(col, row, img):
     return p
 
 
-def getNext(col, row, img):
+def getNext(col, row, img,p):
     """
     Returns the coordinate of the next point if exists. otherwise None
     :param col:
     :param row:
     :param img: as numpy array
+    :param p: list of polygon already processed in order to avoid to analyze the same pixel more than once
     :return: Returns the coordinate of the next point if exists. otherwise None
     """
     for i in [-1,0,1]:
         for j in [-1, 0, 1]:
             if (j==0 and i== 0) or 0<col+i>=img.shape[0] or 0<row+j>=img.shape[1]:
                 continue
-            if  0<=col+i<img.shape[0] and 0<=row+j<img.shape[0] and img[col + i, row + j] ==False :
+            if  0<=col+i<img.shape[0] and 0<=row+j<img.shape[0] and img[col + i, row + j] ==False and p.isInList(col=col+i,row=row+j) is False:
                 return [col + i, row + j]
     return None
 
