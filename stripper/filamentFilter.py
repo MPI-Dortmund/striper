@@ -103,9 +103,11 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
     for pos in range(len(input_images)):
         line_image = ones(input_images[0].shape,dtype=bool)
         drawLines(detected_lines=lines, im=line_image, fg=False)  #error
-        #line_image=invert(line_image)          --> because my init i do not need that
-        line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
-        line_image = invert(line_image)
+        #line_image=invert(line_image)         # --> because my init i do not need that
+        # todo: more test. Since I already skeletonized in a previous functions and now i do not invert the image because my init. the following 2 operations are wrong.
+            # Since a test the code step by step and not the wntire workflow could be that I'll have to restore these operation
+        #line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
+        #line_image = invert(line_image)
         maskImage = masks[pos] if isinstance(masks,list) else None
         filtered_lines+=filterLineImage(line_image=line_image,response_image =response_maps[pos], filamenFilter_context=filamenFilter_context,mask = maskImage)
         #filtered_lines.put(slice_position, filteredLines); because it has an hashmap
