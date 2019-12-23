@@ -102,7 +102,7 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
     #todo: when I'll be able to debug I have to see into it. I canno understand how could work input_images[pos]
     for pos in range(len(input_images)):
         line_image = ones(input_images[0].shape,dtype=bool)
-        drawLines(detected_lines=lines[pos], im=line_image, fg=False)  #error
+        drawLines(detected_lines=lines, im=line_image, fg=False)  #error
         #line_image=invert(line_image)          --> because my init i do not need that
         line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
         line_image = invert(line_image)
