@@ -28,7 +28,7 @@ def enhance_images(input_images, maskcreator, num_cpus = -1):
     fft_masks = maskcreator.get_mask_fft_stack()
     #global all_kernels
     #all_kernels = fft_masks
-    input_img_and_kernel = [(img, fft_mask) for img,fft_mask in  zip (input_images,fft_masks)]
+    input_img_and_kernel = [(img, fft_masks) for img in  input_images]
     if num_cpus > -1:
         pool = Pool(processes=num_cpus)
     else:
