@@ -185,11 +185,8 @@ def normalizeImg(img,new_min=INTEGER_8BIT_MIN,new_max=INTEGER_8BIT_MAX):
     :param new_min:
     :return:
     """
-    new_img = zeros(img.shape)
     m = amin(img)
-    divide(img - m, amax(img) - m, out=new_img)
-    multiply(new_img, new_max - new_min, out=new_img)
-    return new_img+new_min
+    return (new_max - new_min) * ((img - m) / (amax(img) - m)) + new_min
 
 
 def isValid_Line_obj(l,activate_error=False):
