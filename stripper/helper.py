@@ -1,13 +1,11 @@
 """
 JAVA CLASS THAT I CONVERTED IN PYTHON DICTIONARY
 """
-from numpy import zeros,multiply,divide,array,amin,amax
+from numpy import array
 from ridge_detection.basicGeometry import Line
 from PIL import Image
 from math import floor, ceil
-
-
-
+from copy import deepcopy
 
 
 """ to be compatible with java inplementation I listed the min and max value for the 'invert' """
@@ -165,7 +163,20 @@ class Lines_of_ROI:
         self.lines.append(list())
         return self.get_totLine()-1
 
-
+def saturation(img,minValue=None,max_value=None):
+    """
+    Set the value higher than max_value to max_value and value lower min_value to min_value
+    :param img:
+    :param minValue: saturation minimum value
+    :param max_value: saturation maximum value
+    :return:
+    """
+    im=deepcopy(img)
+    if minValue is not None:
+        im[im<minValue]=minValue
+    if max_value is not None:
+        im[im>max_value]=max_value
+    return im
 
 def resize_img(img, resize=(1024, 1024)):
     """
@@ -176,18 +187,6 @@ def resize_img(img, resize=(1024, 1024)):
     """
     im = Image.fromarray(img)
     return array(im.resize(resize, resample=Image.BILINEAR))
-
-def normalizeImg(img,new_min=INTEGER_8BIT_MIN,new_max=INTEGER_8BIT_MAX):
-    """
-    Normalize the image. For default it is converted to an 8bit img
-    :param img:
-    :param new_max:
-    :param new_min:
-    :return:
-    """
-    m = amin(img)
-    return (new_max - new_min) * ((img - m) / (amax(img) - m)) + new_min
-
 
 def isValid_Line_obj(l,activate_error=False):
     risp= not (isinstance(l, list) and isinstance(l[0], Line)) and not isinstance(l, Line)
