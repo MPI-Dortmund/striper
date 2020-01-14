@@ -226,7 +226,7 @@ def filterByResponseMeanStd(lines, response_map, sigmafactor_max, sigmafactor_mi
                 nUnder += 1
             numberOfPointsToBeExcluded = int(l.num * double_filament_insensitivity)
             if nUnder < numberOfPointsToBeExcluded and nOver < numberOfPointsToBeExcluded:
-                filtered += l
+                filtered.append(l)
     return filtered
 
 
