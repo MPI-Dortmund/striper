@@ -305,22 +305,17 @@ def isJunction(col, row, line_image, connected=True):
     return countNeighbors(col=col, row=row, img=line_image, connected=connected) > 2
 
 
+
 #todo: check in a real case scenario
 def removeParallelLines(line_image, lines, radius):
-    """
-    :param line_image:         numpy array                                                           [ByteProcessor]
-    :param lines: list of  object helper.polygon
-    :param radius:
-    :return:
-    """
+    radius = int(radius)
     for l in lines:
-        for r,c in zip(l.col, l.row):
-            for x in range(r-radius,r+radius):
-                for y in range(c - radius, c + radius):
-                    if 0>x>=line_image[0] or 0>y>=line_image[1]:
-                        continue
-                    if line_image[x,y]>0 and isOnLine(x=x,y=y,line=l) is False:
-                        line_image[int(x),int(y)]=True
+        for r, c in zip(l.col, l.row):
+            range_c = range(max(0, c - radius), min(1024, c + radius))
+            for x in range(max(0, r - radius), min(1024, r + radius)):
+                for y in range_c:
+                    if line_image[x, y] is False and isOnLine(x=x, y=y, line=l) is False:
+                        line_image[int(x), int(y)] = True
                         line_image[int(r), int(c)] = True
     return extractLines(line_image)
 
@@ -337,6 +332,7 @@ def isOnLine(x,y,line):
             return True
     return False
 
+
 def drawLines(detected_lines,im,fg=False):
     """
     The im for default is considered binary hence fg=False means Black) ... it works for L type too
@@ -351,7 +347,6 @@ def drawLines(detected_lines,im,fg=False):
     """ plot the lines"""
     if isinstance(detected_lines, list) is False:
         detected_lines=[detected_lines]
-
     for line in detected_lines:
         for i,j in zip(line.col,line.row):
             im[int(i),int(j)] = fg
