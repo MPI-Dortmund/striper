@@ -1,19 +1,19 @@
 {
-    "path_to_file": "../Actin-ADP-BeFx_0003_60e_DW.mrc",
+    "path_to_file": "Actin-ADP-BeFx_0001_60e_DW.mrc",
 	"Detection": {
-        "Filament_width": 16,
+        "Filament_width": 8,
         "Lower_Threshold": 0.6,
-        "Upper_Threshold": 1.02,
+        "Upper_Threshold": 3,
         "Mask_width": 100,
         "Equalize": true
     },
 
   	"Filtering": {
-		"Min_number_of_boxes": 0,
+		"Min_number_of_boxes": 7,
         "Sigma_min_response": 0,
         "Sigma_max_response": 0,
-        "Sensitivity": 0.999,
-        "Min_straightness": 30,
+        "Sensitivity": 0.9,
+        "Min_straightness": 0,
         "Window_size": 30,
         "Allowed_box_overlapping": 0.5,
         "Custom_mask": false
