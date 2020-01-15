@@ -309,10 +309,12 @@ def isJunction(col, row, line_image, connected=True):
 #todo: check in a real case scenario
 def removeParallelLines(line_image, lines, radius):
     radius = int(radius)
+    max_r=line_image.shape[0]
+    max_c = line_image.shape[1]
     for l in lines:
         for r, c in zip(l.col, l.row):
-            range_c = range(max(0, c - radius), min(1024, c + radius))
-            for x in range(max(0, r - radius), min(1024, r + radius)):
+            range_c = range(max(0, c - radius), min(max_c, c + radius))
+            for x in range(max(0, r - radius), min(max_r, r + radius)):
                 for y in range_c:
                     if line_image[x, y] is False and isOnLine(x=x, y=y, line=l) is False:
                         line_image[int(x), int(y)] = True
