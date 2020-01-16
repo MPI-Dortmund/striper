@@ -98,11 +98,10 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
 
     filtered_lines = list()
     masks = filamenFilter_context["mask"]
-
+    im_shape=input_images[0].shape
     #todo: when I'll be able to debug I have to see into it. I canno understand how could work input_images[pos]
     for pos in range(len(input_images)):
-        line_image = ones(input_images[0].shape,dtype=bool)
-        line_image=drawLines(detected_lines=lines[pos], im=line_image, fg=False)  #error
+        line_image=drawLines(detected_lines=lines[pos], im_shape=im_shape)  #error
         #line_image=invert(line_image)         # --> because my init i do not need that
         # todo: more test. Since I already skeletonized in a previous functions and now i do not invert the image because my init. the following 2 operations are wrong.
             # Since a test the code step by step and not the wntire workflow could be that I'll have to restore these operation
@@ -151,17 +150,15 @@ def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
 			for (IUserFilter filter : userFilters) {
 				lines = filter.apply(input_image, response_image, line_image);
 
-				line_image=drawLines(lines, line_image);
+				line_image=drawLines(lines, im_shape=line_image.shape);
 			}
 		}
     """
 
 
-
     lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
-    line_image=drawLines(detected_lines=lines,im=line_image,fg=False)
     lines=filterByResponseMeanStd(lines=lines, response_map=response_image, sigmafactor_max=filamenFilter_context["sigma_max_response"], sigmafactor_min=filamenFilter_context["sigma_min_response"],  double_filament_insensitivity=filamenFilter_context["double_filament_insensitivity"], fitDistr=filamenFilter_context["fit_distribution"])
-    line_image=drawLines(detected_lines=lines, im=line_image, fg=False)
+    line_image=drawLines(detected_lines=lines, im_shape=line_image.shape)
     lines=removeParallelLines(line_image=line_image, lines=lines, radius=filamenFilter_context["min_filament_distance"])
     return filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
 
@@ -334,24 +331,22 @@ def isOnLine(x,y,line):
     return False
 
 
-def drawLines(detected_lines,im,fg=False):
+def drawLines(detected_lines,im_shape):
     """
-    The im for default is considered binary hence fg=False means Black) ... it works for L type too
+    The im for default is considered binary  ... it works for L type too
     plot the lines, in detected_lines' on a new image of the given size.
-    For default the bacground colour is white and the lines are black
     :param detected_lines: list of  object Line from 'ridge_detection.basicGeometry'
-    :param im:  numpy array (it should be binary hence fg=False means Black) ... it works
-    :param fg: lines color
+    :param im_shape:  shape of the img. e.g.: (1024,1024)
     :return:
     """
     #todo: I created it to get as input a PIL image. In order to speed up the code now it gets a numpy array. Is it still ok? or so I have to swap 'line.col,line.row' ?
     """ plot the lines"""
     if isinstance(detected_lines, list) is False:
         detected_lines=[detected_lines]
-    im = ones(im.shape, dtype=bool) if fg is False else zeros(im.shape, dtype=bool)
+    im = ones(im_shape, dtype=bool)
     for line in detected_lines:
         for i,j in zip(line.col,line.row):
-            im[int(i),int(j)] = fg
+            im[int(i),int(j)] = False
     return im
 
 def splitByStraightness(lines,line_image, min_straightness, window_length, radius):
