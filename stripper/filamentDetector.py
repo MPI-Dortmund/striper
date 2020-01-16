@@ -1,10 +1,9 @@
 from math import sqrt
 from stripper.helper import param_json_for_ridge_detection
 from ridge_detection import lineDetector
-from numpy import zeros
-from skimage.morphology import skeletonize
-from skimage.util import invert
+from numpy import ones
 from stripper.lineTracer import extractLines
+from datetime import datetime
 
 def filamentWidthToSigma(filament_width):
     """
@@ -41,18 +40,13 @@ def binaryImage(shape_img,detected_lines):
     :param detected_lines:
     :return: numpy array
     """
-    arr_im=zeros(shape_img,dtype=bool)
+    arr_im=ones(shape_img,dtype=bool)
     """ plot the lines"""
     for line in detected_lines:
-        #todo:If you change ridgeDetection out, you have to change that ...  I swap row and col of the lines because I get them from ridgeDetection prj. There I use PILImage. Since here I use numpy array (that have x,y swapped) I adapted that.
+        # I swap the col and row because ridge detection uses PIL (numpy has r,c swapped). It is just in case we want to plot and compare the output without flipping the image
         for i,j in zip(line.row,line.col):
-            arr_im[int(i),int(j)]=True
-
-    #arr_im = invert(arr_im)        --> because my init i do not need that
-    arr_im = skeletonize(arr_im)  # https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
-    return invert(arr_im)
-
-
+            arr_im[int(i),int(j)]=False
+    return arr_im
 
 def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
     """
@@ -78,12 +72,13 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
                                        darkLine=False, doCorrecPosition=True, doEstimateWidth=False, doExtendLine=True,
                                        overlap=False)
     stack_range = stack_imgs[0] if isinstance(stack_imgs,list) is False else stack_imgs[slice_range["slice_from"]:slice_range["slice_to"]+1]
-
     lines = []
 
     for input_image in stack_range:
         ld = lineDetector.LineDetector(params=p)
+        print(str(datetime.now()) + " STEP 2: IN detect filaments->ld.detectLines")
         detected_lines=ld.detectLines(img=input_image)
+        print(str(datetime.now()) + " STEP 2: OUT detect filaments->ld.detectLines")
         binary_img = binaryImage(shape_img=input_image.shape,detected_lines=detected_lines)
         lines.append(extractLines(binary_img))
         del ld
