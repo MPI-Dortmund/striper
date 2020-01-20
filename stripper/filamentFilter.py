@@ -159,7 +159,7 @@ def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
     lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
     lines=filterByResponseMeanStd(lines=lines, response_map=response_image, sigmafactor_max=filamenFilter_context["sigma_max_response"], sigmafactor_min=filamenFilter_context["sigma_min_response"],  double_filament_insensitivity=filamenFilter_context["double_filament_insensitivity"], fitDistr=filamenFilter_context["fit_distribution"])
     line_image=drawLines(detected_lines=lines, im_shape=line_image.shape)
-    lines=removeParallelLines(line_image=line_image, lines=lines, radius=filamenFilter_context["min_filament_distance"])
+    #lines=removeParallelLines(line_image=line_image, lines=lines, radius=filamenFilter_context["min_filament_distance"])
     return filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
 
 
@@ -339,13 +339,12 @@ def drawLines(detected_lines,im_shape):
     :param im_shape:  shape of the img. e.g.: (1024,1024)
     :return:
     """
-    #todo: I created it to get as input a PIL image. In order to speed up the code now it gets a numpy array. Is it still ok? or so I have to swap 'line.col,line.row' ?
     """ plot the lines"""
     if isinstance(detected_lines, list) is False:
         detected_lines=[detected_lines]
     im = ones(im_shape, dtype=bool)
     for line in detected_lines:
-        for i,j in zip(line.col,line.row):
+        for i,j in zip(line.row,line.col):
             im[int(i),int(j)] = False
     return im
 

@@ -1,5 +1,5 @@
 from math import sqrt
-from stripper.helper import param_json_for_ridge_detection
+from stripper.helper import param_json_for_ridge_detection,Polygon
 from ridge_detection import lineDetector
 from numpy import ones
 from stripper.lineTracer import extractLines
@@ -75,11 +75,14 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
     lines = []
 
     for input_image in stack_range:
+        converted_pol=list()
         ld = lineDetector.LineDetector(params=p)
         print(str(datetime.now()) + " STEP 2: IN detect filaments->ld.detectLines")
         detected_lines=ld.detectLines(img=input_image)
         print(str(datetime.now()) + " STEP 2: OUT detect filaments->ld.detectLines")
-        binary_img = binaryImage(shape_img=input_image.shape,detected_lines=detected_lines)
-        lines.append(extractLines(binary_img))
+        # convert the lines obj from RidgeDetection to Polygon object
+        for v in detected_lines:
+            converted_pol.append(Polygon(col=v.col, row=v.row))
+        lines.append(converted_pol)
         del ld
     return lines
