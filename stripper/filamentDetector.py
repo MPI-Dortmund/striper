@@ -69,7 +69,7 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
                                        lower_th=filamentDetectContext["thresholdRange"]["lower_threshold"],
                                        upper_th=filamentDetectContext["thresholdRange"]["upper_threshold"],
                                        max_l_len=0, min_l_len=0,
-                                       darkLine=False, doCorrecPosition=True, doEstimateWidth=False, doExtendLine=True,
+                                       darkLine=False, doCorrecPosition=True, doEstimateWidth=True, doExtendLine=True,
                                        overlap=False)
     stack_range = stack_imgs[0] if isinstance(stack_imgs,list) is False else stack_imgs[slice_range["slice_from"]:slice_range["slice_to"]+1]
     lines = []
