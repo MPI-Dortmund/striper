@@ -22,6 +22,7 @@
 	"General": {
 		"Box_size": 64,
 		"Box_distance": 10,
+        "place_points": false,
         "Convert_to_8bit": true,
 		"Resize": 1024
 	}
