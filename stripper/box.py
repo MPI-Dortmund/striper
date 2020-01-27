@@ -1,5 +1,6 @@
 from stripper.helper import Roi, Lines_of_ROI
 from PIL import Image,ImageDraw
+from itertools import cycle
 
 def createBoxPlacingContext(slicePosition =1,box_size = 2,box_distance = 4,place_points = False):
     """
@@ -76,10 +77,13 @@ def placeBoxesPainter(lines, target_img, placing_context,box_top_left=True):
     pil_img=Image.fromarray(target_img).convert('RGB')
     draw = ImageDraw.Draw(pil_img)
     bs=placing_context["box_size"]
+
+    cycle_colour=cycle([(255, 0, 0), (0, 255, 0), (0, 0,255), (255, 255, 0), (255, 0, 255), (255, 255, 255)])
     for l in lines_in_roi.lines:
+        colour=next(cycle_colour)
         for r in l:
             """ since the ROI's coordinates are calculated on np.array now I have to switch them"""
-            draw.rectangle(xy=(int(r.y-bs/2),int(r.x-bs/2),int(r.y+bs/2),int(r.x+bs/2)),fill=None,outline=(255, 0, 0))
+            draw.rectangle(xy=(int(r.y-bs/2),int(r.x-bs/2),int(r.y+bs/2),int(r.x+bs/2)),fill=None,outline=colour)
     return pil_img
 
 
