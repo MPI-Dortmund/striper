@@ -7,6 +7,7 @@ from stripper.helper import createSliceRange
 from stripper.filamentDetector import createFilamentDetectorContext,filamentWidthToSigma
 from stripper.filamentEnhancer import createFilamentEnhancerContext
 from stripper.filamentFilter import createFilamentFilterContext
+from stripper.box import createBoxPlacingContext
 from math import sqrt
 
 
@@ -58,6 +59,12 @@ class Params:
                                     box_size = self.cfg["General"]["Box_size"],
                                     box_distance = self.cfg["General"]["Box_distance"],
                                     mask = None if m is False else Image.open(m))
+
+        #todo: the slicePosition has to be changed in the stack position ... of course if I'll decide to use a stack
+        self.placing_context=createBoxPlacingContext(slicePosition =1,box_size = self.cfg["General"]["Box_size"],
+                                                     box_distance = self.cfg["General"]["Box_distance"],
+                                                     place_points = self.cfg["General"]["place_points"])
+
         self.convert8bit=self.cfg["General"]["Convert_to_8bit"] if "Convert_to_8bit" in self.cfg["General"] else False
         self.resize = (self.cfg["General"]["Resize"],self.cfg["General"]["Resize"]) if "Resize" in self.cfg["General"] else None
 

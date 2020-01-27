@@ -10,7 +10,7 @@ from stripper.maskStackCreator import MaskStackCreator
 from stripper.filamentEnhancer import enhance_images
 from stripper.filamentFilter import filterLines,asarray
 from stripper.filamentDetector import filamentDetectorWorker
-from stripper.box import placeBoxesPainter,createBoxPlacingContext
+from stripper.box import placeBoxesPainter
 from numpy import mean,std,flipud
 from PIL import Image
 
@@ -83,9 +83,7 @@ def run():
                                 response_maps=enhanced_imgs,
                                 junctions=junctions_in_enhanced_substack)
 
-    #todo: how create placing_context via params?
-    placing_context = createBoxPlacingContext(slicePosition=1, box_size=64, box_distance=10, place_points=False)
-    img = placeBoxesPainter(lines=filtered_lines, target_img=img[0], placing_context=placing_context,box_top_left=False)
+    img = placeBoxesPainter(lines=filtered_lines, target_img=img[0], placing_context=params.placing_context,box_top_left=False)
     if isMrc is True:
         img = Image.fromarray(flipud(asarray(img)))
     img.save("stripper_output.jpg")
@@ -99,17 +97,8 @@ def run():
     """  START helicalPicker->gui->PreviewActionListener.java or ApplyActionListener.java  after runner.getFilteredLines() """
 
 
-    """ """
     print("END:", datetime.now())
 if __name__ == "__main__":
-    """ 
-    e' il caso reale funzionante dove ho usato i pickle value per fare un rapiudo test. 
-    DA SAPERE:
-     1) Il ridge detection sw ha in ingresso le enhanced image. In java e python tali img sono numericamente diverse ma i rapporti tra tali valori
-        rimangono invariati, infatti girando ridge detection in java e python abbiamo le stesse immagini di output. I valori numerici delle linee e giunti sono diverse per via
-        di aggiustamenti e bug fix stuff in the python code
-    ALLORA IL PB e' tutto nello stripper!!! --> avvia run2 per debug stuff
-    """
     run()
 
 
