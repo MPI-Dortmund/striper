@@ -1,11 +1,9 @@
 from scipy.optimize import curve_fit
 from math import sqrt as math_sqrt
-from numpy import where,arange,exp,pi, asarray,ones, zeros, sqrt as np_sqrt
-from skimage.morphology import skeletonize
-from skimage.util import invert
+from numpy import arange,exp,pi, asarray,ones, sqrt as np_sqrt
 
-from stripper.helper import JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE,Polygon
-from stripper.lineTracer import countNeighbors,extractLines
+from stripper.helper import JAVA_MIN_DOUBLE,JAVA_MAX_DOUBLE
+from stripper.lineTracer import extractLines
 from stripper.box import BoxPositionIterator
 
 #todo: numpy array instead of PIL img. Should I swap the loop operation over col,row??
@@ -84,12 +82,13 @@ def isValid_FilamentFilterContext(ffc):
 
 
 
-def filterLines(lines,filamenFilter_context,input_images,response_maps):
+def filterLines(lines,filamenFilter_context,input_images,response_maps,junctions):
     """
     :param lines:  list of  object helper.polygon       [HashMap<Integer, ArrayList<Polygon>>]
     :param filamenFilter_context: dict with info about the filament filter. Should be crated via 'createFilamentFilterContext'
     :param input_images: list of images (the stack)     [ImageStack]
     :param response_maps:                               [ImageStack]
+    :param junctions:
     :return:    list of filtered images                 [HashMap<Integer, ArrayList<Polygon>>]
     """
     if isValid_FilamentFilterContext(filamenFilter_context) is False:
@@ -99,21 +98,16 @@ def filterLines(lines,filamenFilter_context,input_images,response_maps):
     filtered_lines = list()
     masks = filamenFilter_context["mask"]
     im_shape=input_images[0].shape
-    #todo: when I'll be able to debug I have to see into it. I canno understand how could work input_images[pos]
+
     for pos in range(len(input_images)):
-        line_image=drawLines(detected_lines=lines[pos], im_shape=im_shape)  #error
-        #line_image=invert(line_image)         # --> because my init i do not need that
-        # todo: more test. Since I already skeletonized in a previous functions and now i do not invert the image because my init. the following 2 operations are wrong.
-            # Since a test the code step by step and not the wntire workflow could be that I'll have to restore these operation
-        #line_image=skeletonize(line_image)       #https://scikit-image.org/docs/dev/auto_examples/edges/plot_skeleton.html
-        #line_image = invert(line_image)
+        line_image=drawLines(detected_lines=lines[pos], im_shape=im_shape)
         maskImage = masks[pos] if isinstance(masks,list) else None
-        filtered_lines+=filterLineImage(line_image=line_image,response_image =response_maps[pos], filamenFilter_context=filamenFilter_context,mask = maskImage)
+        filtered_lines+=filterLineImage(line_image=line_image,response_image =response_maps[pos], filamenFilter_context=filamenFilter_context,junctions=junctions[pos],mask = maskImage)
         #filtered_lines.put(slice_position, filteredLines); because it has an hashmap
     return filtered_lines
 
 
-def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
+def filterLineImage(line_image,response_image,filamenFilter_context,junctions,mask=None):
     """
      1. Set border to zero      it was "private void setBorderToZero(ImageProcessor ip, int bordersize)"
 	 2. Remove junctions
@@ -127,6 +121,7 @@ def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
     :param line_image:                                      [ImageProcessor]
     :param response_image:                                  [ImageProcessor]
     :param mask:                                            [ImageProcessor]
+    :param junctions:
     :param filamenFilter_context: dict with info about the filament filter. Should be crated via 'createFilamentFilterContext'
     :return:
     """
@@ -135,7 +130,10 @@ def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
         exit(-1)
 
     setBorderToZero(line_image=line_image, bordersize=filamenFilter_context["border_diameter"])
-    removeJunctions(line_image=line_image, removement_radius=filamenFilter_context["removement_radius"])
+
+    """ remove the junction"""
+    for i in junctions:
+        setRegionToWhite(i.y,i.x,img=line_image,radius=filamenFilter_context["removement_radius"])
 
     #todo:check with a mask in order to adapt it to the python logic. I think you have just to replace 0 with True for cleaning code purpouse
     if mask is not  None:
@@ -143,7 +141,7 @@ def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
 
     lines = splitByStraightness(lines=extractLines(line_image),line_image=line_image, min_straightness=filamenFilter_context["min_line_straightness"], window_length=filamenFilter_context["window_width_straightness"], radius=filamenFilter_context["removement_radius"])
 
-    #todo: translate this part of the code
+    #todo: translate this part of the code??
     """
     		ArrayList<IUserFilter> userFilters = context.getUserFilters();
 		if(userFilters!=null){
@@ -155,11 +153,7 @@ def filterLineImage(line_image,response_image,filamenFilter_context,mask=None):
 		}
     """
 
-
-    lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
-    lines=filterByResponseMeanStd(lines=lines, response_map=response_image, sigmafactor_max=filamenFilter_context["sigma_max_response"], sigmafactor_min=filamenFilter_context["sigma_min_response"],  double_filament_insensitivity=filamenFilter_context["double_filament_insensitivity"], fitDistr=filamenFilter_context["fit_distribution"])
-    line_image=drawLines(detected_lines=lines, im_shape=line_image.shape)
-    #lines=removeParallelLines(line_image=line_image, lines=lines, radius=filamenFilter_context["min_filament_distance"])
+    lines=filterByResponseMeanStd(lines=filterByLength(lines=lines, filamenFilter_context=filamenFilter_context), response_map=response_image, sigmafactor_max=filamenFilter_context["sigma_max_response"], sigmafactor_min=filamenFilter_context["sigma_min_response"],  double_filament_insensitivity=filamenFilter_context["double_filament_insensitivity"], fitDistr=filamenFilter_context["fit_distribution"])
     return filterByLength(lines=lines, filamenFilter_context=filamenFilter_context)
 
 
@@ -271,51 +265,6 @@ def meanResponse(l, response_map):
         s+=response_map[i, j]
     return s/l.num
 
-
-
-def removeJunctions(line_image,removement_radius):
-    """
-    :param line_image:
-    :param removement_radius:
-    :return:
-    """
-    juncPos = Polygon(col=[],row=[])
-    index_r, index_c = where(line_image == False)  # coordinate pixel black
-    for col, row in zip(index_r, index_c ):
-            if isJunction(col=col, row=row, line_image=line_image, connected=True):
-                juncPos.add_point(col,row)
-
-    for col,row in zip(juncPos.col,juncPos.row):
-        setRegionToWhite(col,row,img=line_image,radius=removement_radius)
-
-
-
-def isJunction(col, row, line_image, connected=True):
-    """
-    :param col:
-    :param row:
-    :param line_image:
-    :param connected:
-    :return:
-    """
-    return countNeighbors(col=col, row=row, img=line_image, connected=connected) > 2
-
-
-
-#todo: check in a real case scenario
-def removeParallelLines(line_image, lines, radius):
-    radius = int(radius)
-    max_r=line_image.shape[0]
-    max_c = line_image.shape[1]
-    for l in lines:
-        for r, c in zip(l.col, l.row):
-            range_c = range(max(0, c - radius), min(max_c, c + radius))
-            for x in range(max(0, r - radius), min(max_r, r + radius)):
-                for y in range_c:
-                    if line_image[x, y] is False and isOnLine(x=x, y=y, line=l) is False:
-                        line_image[int(x), int(y)] = True
-                        line_image[int(r), int(c)] = True
-    return extractLines(line_image)
 
 def isOnLine(x,y,line):
     """

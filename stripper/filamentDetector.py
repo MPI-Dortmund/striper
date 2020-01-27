@@ -1,8 +1,6 @@
 from math import sqrt
 from stripper.helper import param_json_for_ridge_detection,Polygon
 from ridge_detection import lineDetector
-from numpy import ones
-from stripper.lineTracer import extractLines
 from datetime import datetime
 
 def filamentWidthToSigma(filament_width):
@@ -12,6 +10,7 @@ def filamentWidthToSigma(filament_width):
     """
     return filament_width / (2*sqrt(3)) +0.5
 
+
 def createDetectionThresholdRange(lower_threshold,upper_threshold):
     """
     It is used to create a dict instead of the helicalPicker->FilamentDetector->DetectionThresholdRange.java class
@@ -20,6 +19,7 @@ def createDetectionThresholdRange(lower_threshold,upper_threshold):
     :return:
     """
     return {"lower_threshold": lower_threshold, "upper_threshold": upper_threshold}
+
 
 def createFilamentDetectorContext(sigma, lower_threshold, upper_threshold):
     """
@@ -32,22 +32,6 @@ def createFilamentDetectorContext(sigma, lower_threshold, upper_threshold):
     return {"sigma":sigma,"thresholdRange":createDetectionThresholdRange(lower_threshold=lower_threshold,upper_threshold=upper_threshold)}
 
 
-
-def binaryImage(shape_img,detected_lines):
-    """
-    plot the detectedLines as black on white background
-    :param shape_img:
-    :param detected_lines:
-    :return: numpy array
-    """
-    arr_im=ones(shape_img,dtype=bool)
-    """ plot the lines"""
-    for line in detected_lines:
-        # I swap the col and row because ridge detection uses PIL (numpy has r,c swapped). It is just in case we want to plot and compare the output without flipping the image
-        for i,j in zip(line.row,line.col):
-            arr_im[int(i),int(j)]=False
-    return arr_im
-
 def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
     """
     it is public HashMap<Integer, ArrayList<Polygon>> getFilaments(SliceRange slice_range) of
@@ -55,7 +39,7 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
     :param stack_imgs: list of images. Each image is a numpy array
     :param slice_range: dict. shold generate via helper.createSliceRange
     :param filamentDetectContext:  dict. shold generate via createFilamentDetectorContext
-    :return:
+    :return: lines and junction got via the ridge detection script
     """
 
     if isinstance(slice_range,dict ) is False or "slice_from" not in slice_range.keys() or "slice_from" not in slice_range.keys():
@@ -73,16 +57,22 @@ def filamentDetectorWorker(stack_imgs, slice_range, filamentDetectContext):
                                        overlap=False)
     stack_range = stack_imgs[0] if isinstance(stack_imgs,list) is False else stack_imgs[slice_range["slice_from"]:slice_range["slice_to"]+1]
     lines = []
+    junctions =[]
 
+    #todo: I'll change the stack analysys. ... Let the junctions,lines list as list and not as list of lists as should be ... I'll always have a single img in stack_range in this point of the code
+    # I have still to think how cahnge the structure of the code
     for input_image in stack_range:
         converted_pol=list()
         ld = lineDetector.LineDetector(params=p)
         print(str(datetime.now()) + " STEP 2: IN detect filaments->ld.detectLines")
         detected_lines=ld.detectLines(img=input_image)
         print(str(datetime.now()) + " STEP 2: OUT detect filaments->ld.detectLines")
+
         # convert the lines obj from RidgeDetection to Polygon object
         for v in detected_lines:
             converted_pol.append(Polygon(col=v.col, row=v.row))
         lines.append(converted_pol)
-        del ld
-    return lines
+        junctions.append(ld.junctions)
+    return lines,junctions
+
+
