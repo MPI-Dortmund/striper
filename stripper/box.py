@@ -25,12 +25,6 @@ class BoxPositionIterator:
         self.topleft = topleft
         self.boxsize = boxsize
 
-    def hasNext(self):
-        """
-        :return: the position of the next point, using the metric of  'nextPointPos'
-        """
-        return self.nextPointPos() > -1
-
     def nextPointPos(self):
         """
         :return: return the next point position. -1 if there is no next one
@@ -38,9 +32,13 @@ class BoxPositionIterator:
         for i in range(self.curr+1, self.p.num-1):
             """ Point2D.distanceSq function call --> http://developer.classpath.org/doc/java/awt/geom/Point2D.html#distanceSq:double:double:double:double """
             distsq_to_start=(self.p.col[i]-self.p.col[0])*(self.p.col[i]-self.p.col[0]) + (self.p.row[i]-self.p.row[0])*(self.p.row[i]-self.p.row[0])
+            if distsq_to_start <= self.distToEndSq:
+                continue
             distsq_to_prev=(self.p.col[i]-self.p.col[self.curr])*(self.p.col[i]-self.p.col[self.curr]) + (self.p.row[i]-self.p.row[self.curr])*(self.p.row[i]-self.p.row[self.curr])
+            if distsq_to_prev<self.boxToBoxDistSq:
+                continue
             distsq_to_end=(self.p.col[i]-self.p.col[self.p.num-1])*(self.p.col[i]-self.p.col[self.p.num-1]) + (self.p.row[i]-self.p.row[self.p.num-1])*(self.p.row[i]-self.p.row[self.p.num-1])
-            if distsq_to_start>self.distToEndSq and distsq_to_prev>=self.boxToBoxDistSq and distsq_to_end>self.distToEndSq:
+            if distsq_to_end>self.distToEndSq:
                 return i
         return -1
 
@@ -101,16 +99,16 @@ def placeBoxes( lines, placing_context,box_top_left=True):
         print("ERROR> invalid placing_context variable. Use 'createBoxPlacingContext(slicePosition =1,box_size = 2,box_distance = 4,place_points = False)' to create it")
         exit(-1)
 
-    box_size = placing_context["box_size"]
+    box_size = 1 if placing_context["place_points"] is True else placing_context["box_size"]
 
     lines_in_roi = Lines_of_ROI()   # it is the representation of the lines in box
     for l in lines:
         index=lines_in_roi.createLine()
         it = BoxPositionIterator(p=l, boxsize= box_size, boxdista=placing_context["box_distance"], topleft=box_top_left)
-        while it.hasNext():
+        while True:
             point=it.next()
-            if placing_context["place_points"] is True:
-                box_size =1
+            if point is None:
+                break
             roi=Roi(x=point[0],y=point[1],w=box_size,h=box_size,line_id=index)
             lines_in_roi.add_ROI(roi=roi)
     return lines_in_roi

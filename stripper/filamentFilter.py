@@ -344,28 +344,6 @@ def getStraightness(line, start,end):
     for i in range(start,end):
         s=+ math_sqrt( (line.col[i]-line.col[i+1]) * (line.col[i]-line.col[i+1])    +   (line.row[i]-line.row[i+1]) * (line.row[i]-line.row[i+1]) )
     distance =  math_sqrt( (line.col[start]-line.col[end]) * (line.col[start]-line.col[end])    +   (line.row[start]-line.row[end]) * (line.row[start]-line.row[end]) )
-    #todo: vectorize it. Since I changed the structure of the input value it does not work
-    """
-    xend = line.col[end][:-1]
-    xstart = line.col[start][1:]
-    yend = line.row[end][:-1]
-    ystart = line.row[start][1:]
-    sx = xstart - xend
-    sy = ystart - yend
-
-    out_shape=sx.shape[0]
-    pow_sx = zeros(out_shape)
-    pow_sy = zeros(out_shape)
-    sqrt_sum_pows = zeros(out_shape)
-
-    multiply(sx, sx, out=pow_sx)
-    multiply(sy, sy, out=pow_sy)
-    sum_pows = pow_sx + pow_sy
-    np_sqrt(sum_pows, out=sqrt_sum_pows)
-    s =np_sum(sqrt_sum_pows)
-
-    distance = math_sqrt( (line.col[start]-line.col[end])*(line.col[start]-line.col[end]) + (line.row[start]-line.row[end])*(line.row[start]-line.row[end]) )
-    """
     return distance / s
 
 
@@ -394,9 +372,8 @@ def calcNumberOfBoxes(l,boxSize,boxDistance):
     """
     n = 0
     it = BoxPositionIterator(p=l, boxsize=boxSize, boxdista=boxDistance, topleft=False)
-    while it.hasNext():
+    while it.next() is not None:
         n+=1
-        it.next()
     return n
 
 
