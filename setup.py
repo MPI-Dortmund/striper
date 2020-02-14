@@ -54,12 +54,13 @@ setup(
     packages=['stripper'],
     license='MIT',
     install_requires=[
-        "numpy==1.18.0rc1",
-        "pillow==6.2.1",
-        "mrcfile==1.1.2",
+        "ridge-detection>=1.1.0",
+        "numpy>=1.17.0",
+        "pillow>=6.1.0",
+        "mrcfile>=1.1.2",
         "pytest==5.3.1",
-        "scipy==1.4.0rc2",
-        "imageio==2.6.1"
+        "scipy>=1.3.0",
+        "imageio>=2.6.1"
     ],
     description='STRIPPER: faST Robust fIlament Picking ProcEduRe',
 )
